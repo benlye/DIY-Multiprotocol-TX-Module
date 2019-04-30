@@ -41,7 +41,7 @@ before_install:
       arduino --install-boards multi4in1:avr;
     fi
   #
-  - buildMulti() { cat Multiprotocol/_Config.h; BUILDCMD="arduino --verify --board $BOARD Multiprotocol/Multiprotocol.ino --pref build.path=./build/"; echo $BUILDCMD; $BUILDCMD; echo; }
+  - buildMulti() { BUILDCMD="arduino --verify --board $BOARD Multiprotocol/Multiprotocol.ino --pref build.path=./build/"; echo $BUILDCMD; $BUILDCMD; echo; }
   - buildProtocol() { opt_disable $ALL_PROTOCOLS; opt_enable $1; buildMulti; }
   - buildEachProtocol() { exitcode=0; for PROTOCOL in $ALL_PROTOCOLS ; do echo Building $PROTOCOL; buildProtocol $PROTOCOL; if [ $? -ne 0 ]; then exitcode=1; fi; done; return $exitcode; }
   #
