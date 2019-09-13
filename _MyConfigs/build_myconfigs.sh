@@ -6,6 +6,8 @@ SRCPATH=../Multiprotocol
 # Path to sed - needed for the option functions
 SED=$(which gsed || which sed)
 
+export PATH=$PATH:$HOME/arduino-ide
+
 # Function to enable a firmware option
 optenable() {
     for opt in "$@" ; do
@@ -105,7 +107,7 @@ cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-stm-t16int-${MULTI_VERSION}
 cp $SRCPATH/_Config.h.bak $SRCPATH/_Config.h
 
 ### Build for the Banggood STM32 module in the 9XR Pro ###
-printf "\n\e[92mBuilding firmware v$MULTI_VERSIONfor the Banggood 9XR Pro STM32 module\e[0m\n\n"
+printf "\n\e[92mBuilding firmware v$MULTI_VERSION for the Banggood STM32 module for the 9XR Pro\e[0m\n\n"
 
 #// Forced CC2500 tuning for CC2500
 optenable FORCE_FRSKYD_TUNING
@@ -137,7 +139,7 @@ cp $SRCPATH/_Config.h.bak $SRCPATH/_Config.h
 BOARD="multi4in1:avr:multiatmega328p:bootloader=optiboot"
 
 ### Build for the Banggood AVR module in the 9XR Pro ###
-printf "\n\e[92mBuilding firmware v$MULTI_VERSION for the Banggood 9XR Pro AVR module\e[0m\n\n"
+printf "\n\e[92mBuilding firmware v$MULTI_VERSION for the Banggood AVR module for the 9XR Pro\e[0m\n\n"
 
 #// Forced CC2500 tuning for CC2500
 optenable FORCE_FRSKYD_TUNING
@@ -175,5 +177,40 @@ cp /tmp/build/Multiprotocol.ino.hex ./firmware/multi-avr-bg9xr-${MULTI_VERSION}.
 # Restore _Config.h
 cp $SRCPATH/_Config.h.bak $SRCPATH/_Config.h
 
+### Build for the Banggood AVR module in the T16 ###
+printf "\n\e[92mBuilding firmware v$MULTI_VERSION for the Banggood AVR module for the T16\e[0m\n\n"
+
+#// Forced CC2500 tuning for CC2500
+optenable FORCE_FRSKYD_TUNING
+optset FORCE_FRSKYD_TUNING -51
+optenable FORCE_FRSKYX_TUNING
+optset FORCE_FRSKYX_TUNING -51
+
+# // Disable PPM
+optdisable ENABLE_PPM
+
+# // Force the same global ID as other modules
+optenable FORCE_GLOBAL_ID
+optset FORCE_GLOBAL_ID 0x65428639
+
+# // Disable all the protocols
+optdisable $ALL_PROTOCOLS
+
+# // Enable selected protocols
+optenable FLYSKY_A7105_INO
+optenable FRSKYD_CC2500_INO
+optenable FRSKYX_CC2500_INO
+optenable MJXQ_NRF24L01_INO
+optenable H8_3D_NRF24L01_INO
+optenable SCANNER_CC2500_INO
+
+buildMulti
+
+# Copy the binary
+cp /tmp/build/Multiprotocol.ino.hex ./firmware/multi-avr-bgt16-${MULTI_VERSION}.hex
+
+# Restore _Config.h
+cp $SRCPATH/_Config.h.bak $SRCPATH/_Config.h
+
 # Clean up
-rm $SRCPATH/_Config.h.bak 
+rm $SRCPATH/_Config.h.bak
