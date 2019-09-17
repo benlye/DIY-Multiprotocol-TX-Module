@@ -33,7 +33,7 @@ optadd() {
 }
 
 # Function to build the firmware
-buildMulti() { exitcode=0; BUILDCMD="arduino --verify --board $BOARD $SRCPATH/Multiprotocol.ino --pref build.path=/tmp/build/"; echo $BUILDCMD; $BUILDCMD; if [ $? -ne 0 ]; then exitcode=1; fi; echo; return $exitcode; }
+buildMulti() { exitcode=0; BUILDCMD="arduino-cli compile -b $BOARD $SRCPATH/Multiprotocol.ino --build-path /tmp/build/"; echo $BUILDCMD; $BUILDCMD; if [ $? -ne 0 ]; then exitcode=1; fi; echo; return $exitcode; }
 
 # Get all the protocol names
 A7105_PROTOCOLS=$(sed -n 's/[\/\/]*[[:blank:]]*#define[[:blank:]]*\([[:alnum:]_]*_A7105_INO\)\(.*\)/\1/p' $SRCPATH/_Config.h)
@@ -53,7 +53,7 @@ MULTI_VERSION=$MAJOR_VERSION.$MINOR_VERSION.$REVISION_VERSION.$PATCH_VERSION
 cp $SRCPATH/_Config.h $SRCPATH/_Config.h.bak
 
 # Set the board for the STM32 builds
-BOARD="multi4in1:STM32F1:multistm32f103c:debug_option=none"
+BOARD="multi4in1-devel:STM32F1:multistm32f103c:debug_option=none"
 
 ### Build for the JP4IN1 for OpenTX ###
 printf "\n\e[92mBuilding firmware v$MULTI_VERSION for the Jumper T16 JP4IN1 module\e[0m\n\n"
@@ -136,7 +136,7 @@ cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-stm-bg9xr-${MULTI_VERSION}.
 cp $SRCPATH/_Config.h.bak $SRCPATH/_Config.h
 
 # Set the board for the Atmega AVR build
-BOARD="multi4in1:avr:multiatmega328p:bootloader=optiboot"
+BOARD="multi4in1-devel:avr:multiatmega328p:bootloader=optiboot"
 
 ### Build for the Banggood AVR module in the 9XR Pro ###
 printf "\n\e[92mBuilding firmware v$MULTI_VERSION for the Banggood AVR module for the 9XR Pro\e[0m\n\n"
