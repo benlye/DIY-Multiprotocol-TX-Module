@@ -43,17 +43,17 @@ NRF24L01_PROTOCOLS=$(sed -n 's/[\/\/]*[[:blank:]]*#define[[:blank:]]*\([[:alnum:
 ALL_PROTOCOLS=$(echo $A7105_PROTOCOLS $CC2500_PROTOCOLS $CYRF6936_PROTOCOLS $NRF24L01_PROTOCOLS);
 
 # Get the firmware version number
-MAJOR_VERSION=$(grep "VERSION_MAJOR" "$SRCPATH/Multiprotocol.h" | awk -v N=3 'gsub(/\r/,""){print $N}')
-MINOR_VERSION=$(grep "VERSION_MINOR" "$SRCPATH/Multiprotocol.h" | awk -v N=3 'gsub(/\r/,""){print $N}')
-REVISION_VERSION=$(grep "VERSION_REVISION" "$SRCPATH//Multiprotocol.h" | awk -v N=3 'gsub(/\r/,""){print $N}')
-PATCH_VERSION=$(grep "VERSION_PATCH" "$SRCPATH//Multiprotocol.h" | awk -v N=3 'gsub(/\r/,""){print $N}')
+MAJOR_VERSION=$(grep "VERSION_MAJOR" "$SRCPATH/Multiprotocol.h" | awk -v N=3 '{gsub(/\r/,""); print $N}')
+MINOR_VERSION=$(grep "VERSION_MINOR" "$SRCPATH/Multiprotocol.h" | awk -v N=3 '{gsub(/\r/,""); print $N}')
+REVISION_VERSION=$(grep "VERSION_REVISION" "$SRCPATH//Multiprotocol.h" | awk -v N=3 '{gsub(/\r/,""); print $N}')
+PATCH_VERSION=$(grep "VERSION_PATCH" "$SRCPATH//Multiprotocol.h" | awk -v N=3 '{gsub(/\r/,""); print $N}')
 MULTI_VERSION=$MAJOR_VERSION.$MINOR_VERSION.$REVISION_VERSION.$PATCH_VERSION
 
 # Make a copy of _Config.h
 cp $SRCPATH/_Config.h $SRCPATH/_Config.h.bak
 
 # Set the board for the STM32 builds
-BOARD="multi4in1-devel:STM32F1:multistm32f103c:debug_option=none"
+BOARD="multi4in1:STM32F1:multistm32f103c:debug_option=none"
 
 ### Build for the JP4IN1 for OpenTX ###
 printf "\n\e[92mBuilding firmware v$MULTI_VERSION for the Jumper T16 JP4IN1 module\e[0m\n\n"
@@ -136,7 +136,7 @@ cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-stm-bg9xr-${MULTI_VERSION}.
 cp $SRCPATH/_Config.h.bak $SRCPATH/_Config.h
 
 # Set the board for the Atmega AVR build
-BOARD="multi4in1-devel:avr:multiatmega328p:bootloader=optiboot"
+BOARD="multi4in1:avr:multiatmega328p:bootloader=optiboot"
 
 ### Build for the Banggood AVR module in the 9XR Pro ###
 printf "\n\e[92mBuilding firmware v$MULTI_VERSION for the Banggood AVR module for the 9XR Pro\e[0m\n\n"
@@ -172,7 +172,7 @@ optenable H8_3D_NRF24L01_INO
 buildMulti
 
 # Copy the binary
-cp /tmp/build/Multiprotocol.ino.hex ./firmware/multi-avr-bg9xr-${MULTI_VERSION}.hex
+cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-avr-bg9xr-${MULTI_VERSION}.bin
 
 # Restore _Config.h
 cp $SRCPATH/_Config.h.bak $SRCPATH/_Config.h
@@ -207,7 +207,7 @@ optenable SCANNER_CC2500_INO
 buildMulti
 
 # Copy the binary
-cp /tmp/build/Multiprotocol.ino.hex ./firmware/multi-avr-bgt16-${MULTI_VERSION}.hex
+cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-avr-bgt16-${MULTI_VERSION}.bin
 
 # Restore _Config.h
 cp $SRCPATH/_Config.h.bak $SRCPATH/_Config.h
