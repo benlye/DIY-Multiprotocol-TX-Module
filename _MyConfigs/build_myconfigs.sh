@@ -214,3 +214,5 @@ cp $SRCPATH/_Config.h.bak $SRCPATH/_Config.h
 
 # Clean up
 rm $SRCPATH/_Config.h.bak
+rm $SRCPATH/Multiprotocol.ino.multi4in1*.elf
+rm $SRCPATH/Multiprotocol.ino.multi4in1*.bin
