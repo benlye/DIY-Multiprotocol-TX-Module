@@ -19,7 +19,7 @@
 #define VERSION_MAJOR		1
 #define VERSION_MINOR		2
 #define VERSION_REVISION	1
-#define VERSION_PATCH_LEVEL	79
+#define VERSION_PATCH_LEVEL	81
 
 //******************
 // Protocols
@@ -574,7 +574,7 @@ enum {
 #define AFHDS2A_EEPROM_OFFSET	50		// RX ID, 4 bytes per model id, end is 50+64=114
 #define BUGS_EEPROM_OFFSET		114		// RX ID, 2 bytes per model id, end is 114+32=146
 #define BUGSMINI_EEPROM_OFFSET	146		// RX ID, 2 bytes per model id, end is 146+32=178
-#define FRSKYX_RX_EEPROM_OFFSET	178		// TX ID + channels, 50 bytes per model, end is 178+200=378
+#define FRSKYX_RX_EEPROM_OFFSET	178		// (3) TX ID + (47) channels + (1) freq_tune, 51 bytes per model, end is 178+51=229
 //#define CONFIG_EEPROM_OFFSET 	210		// Current configuration of the multimodule
 
 //****************************************
@@ -806,7 +806,7 @@ Serial: 100000 Baud 8e2      _ xxxx xxxx p --
 	2047	+125%
    Values are concatenated to fit in 22 bytes like in SBUS protocol.
    Failsafe values have exactly the same range/values than normal channels except the extremes where
-      0=hold, 2047=no pulse. If failsafe is not set or RX then failsafe packets should not be sent.
+      0=no pulse, 2047=hold. If failsafe is not set or RX then failsafe packets should not be sent.
 */
 /*
   Multimodule Status
@@ -876,7 +876,6 @@ Serial: 100000 Baud 8e2      _ xxxx xxxx p --
   Type 0x03 Frsky Hub telemetry
 
 	*No* usual frsky byte stuffing and without start/stop byte (0x7e)
-
 
   Type 0x04 Spektrum telemetry data
    data[0] TX RSSI
