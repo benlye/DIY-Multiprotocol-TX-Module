@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# Get the command line options
+while getopts ":dh" opt; do
+  case $opt in
+    d) BOARDSUFFIX="-devel"
+    ;;
+    h) printf "$USAGE"; exit 1
+    ;;
+  esac
+done
+
 # Relative path to the firmware source
 SRCPATH=../Multiprotocol
 
@@ -49,11 +59,14 @@ REVISION_VERSION=$(grep "VERSION_REVISION" "$SRCPATH//Multiprotocol.h" | awk -v 
 PATCH_VERSION=$(grep "VERSION_PATCH" "$SRCPATH//Multiprotocol.h" | awk -v N=3 '{gsub(/\r/,""); print $N}')
 MULTI_VERSION=$MAJOR_VERSION.$MINOR_VERSION.$REVISION_VERSION.$PATCH_VERSION
 
+# Make  _Config.h file is unmodified
+git checkout $SRCPATH/_Config.h
+
 # Make a copy of _Config.h
 cp $SRCPATH/_Config.h $SRCPATH/_Config.h.bak
 
 # Set the board for the STM32 builds
-BOARD="multi4in1:STM32F1:multistm32f103c:debug_option=none"
+BOARD="multi4in1$BOARDSUFFIX:STM32F1:multistm32f103c:debug_option=none"
 
 ### Build for the JP4IN1 for OpenTX ###
 printf "\n\e[92mBuilding firmware v$MULTI_VERSION for the Jumper T16 JP4IN1 module\e[0m\n\n"
@@ -73,8 +86,12 @@ optset FORCE_GLOBAL_ID 0x65428639
 
 buildMulti
 
-# Copy the binary
-cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-stm-jp4in1-${MULTI_VERSION}.bin
+# If everything ent OK, copy the binary
+if [ $? -eq 0 ]; then
+    cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-stm-jp4in1-${MULTI_VERSION}.bin
+else
+    printf "n\e[91mAn error occured while compiling the firmware.\e[0m\n\n"
+fi
 
 # Restore _Config.h
 cp $SRCPATH/_Config.h.bak $SRCPATH/_Config.h
@@ -100,8 +117,12 @@ optset FORCE_GLOBAL_ID 0x65428639
 
 buildMulti
 
-# Copy the binary
-cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-stm-t16int-${MULTI_VERSION}.bin
+# If everything ent OK, copy the binary
+if [ $? -eq 0 ]; then
+    cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-stm-t16int-${MULTI_VERSION}.bin
+else
+    printf "n\e[91mAn error occured while compiling the firmware.\e[0m\n\n"
+fi
 
 # Restore _Config.h
 cp $SRCPATH/_Config.h.bak $SRCPATH/_Config.h
@@ -129,8 +150,12 @@ optset FORCE_GLOBAL_ID 0x65428639
 
 buildMulti
 
-# Copy the binary
-cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-stm-bg9xr-${MULTI_VERSION}.bin
+# If everything ent OK, copy the binary
+if [ $? -eq 0 ]; then
+    cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-stm-bg9xr-${MULTI_VERSION}.bin
+else
+    printf "n\e[91mAn error occured while compiling the firmware.\e[0m\n\n"
+fi
 
 # Restore _Config.h
 cp $SRCPATH/_Config.h.bak $SRCPATH/_Config.h
@@ -171,8 +196,12 @@ optenable H8_3D_NRF24L01_INO
 
 buildMulti
 
-# Copy the binary
-cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-avr-bg9xr-${MULTI_VERSION}.bin
+# If everything ent OK, copy the binary
+if [ $? -eq 0 ]; then
+    cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-avr-bg9xr-${MULTI_VERSION}.bin
+else
+    printf "n\e[91mAn error occured while compiling the firmware.\e[0m\n\n"
+fi
 
 # Restore _Config.h
 cp $SRCPATH/_Config.h.bak $SRCPATH/_Config.h
@@ -206,8 +235,12 @@ optenable SCANNER_CC2500_INO
 
 buildMulti
 
-# Copy the binary
-cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-avr-bgt16-${MULTI_VERSION}.bin
+# If everything ent OK, copy the binary
+if [ $? -eq 0 ]; then
+    cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-avr-bgt16-${MULTI_VERSION}.bin
+else
+    printf "n\e[91mAn error occured while compiling the firmware.\e[0m\n\n"
+fi
 
 # Restore _Config.h
 cp $SRCPATH/_Config.h.bak $SRCPATH/_Config.h
