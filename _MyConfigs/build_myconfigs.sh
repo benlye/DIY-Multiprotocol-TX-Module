@@ -90,7 +90,7 @@ buildMulti
 if [ $? -eq 0 ]; then
     cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-stm-jp4in1-${MULTI_VERSION}.bin
 else
-    printf "n\e[91mAn error occured while compiling the firmware.\e[0m\n\n"
+    printf "\n\e[91mAn error occured while compiling the firmware.\e[0m\n\n"
 fi
 
 # Restore _Config.h
@@ -121,7 +121,7 @@ buildMulti
 if [ $? -eq 0 ]; then
     cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-stm-t16int-${MULTI_VERSION}.bin
 else
-    printf "n\e[91mAn error occured while compiling the firmware.\e[0m\n\n"
+    printf "\n\e[91mAn error occured while compiling the firmware.\e[0m\n\n"
 fi
 
 # Restore _Config.h
@@ -154,14 +154,14 @@ buildMulti
 if [ $? -eq 0 ]; then
     cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-stm-bg9xr-${MULTI_VERSION}.bin
 else
-    printf "n\e[91mAn error occured while compiling the firmware.\e[0m\n\n"
+    printf "\n\e[91mAn error occured while compiling the firmware.\e[0m\n\n"
 fi
 
 # Restore _Config.h
 cp $SRCPATH/_Config.h.bak $SRCPATH/_Config.h
 
 # Set the board for the Atmega AVR build
-BOARD="multi4in1:avr:multiatmega328p:bootloader=optiboot"
+BOARD="multi4in1$BOARDSUFFIX:avr:multiatmega328p:bootloader=optiboot"
 
 ### Build for the Banggood AVR module in the 9XR Pro ###
 printf "\n\e[92mBuilding firmware v$MULTI_VERSION for the Banggood AVR module for the 9XR Pro\e[0m\n\n"
@@ -200,7 +200,7 @@ buildMulti
 if [ $? -eq 0 ]; then
     cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-avr-bg9xr-${MULTI_VERSION}.bin
 else
-    printf "n\e[91mAn error occured while compiling the firmware.\e[0m\n\n"
+    printf "\n\e[91mAn error occured while compiling the firmware.\e[0m\n\n"
 fi
 
 # Restore _Config.h
@@ -239,7 +239,7 @@ buildMulti
 if [ $? -eq 0 ]; then
     cp /tmp/build/Multiprotocol.ino.bin ./firmware/multi-avr-bgt16-${MULTI_VERSION}.bin
 else
-    printf "n\e[91mAn error occured while compiling the firmware.\e[0m\n\n"
+    printf "\n\e[91mAn error occured while compiling the firmware.\e[0m\n\n"
 fi
 
 # Restore _Config.h
