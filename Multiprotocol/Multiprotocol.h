@@ -19,7 +19,7 @@
 #define VERSION_MAJOR		1
 #define VERSION_MINOR		2
 #define VERSION_REVISION	1
-#define VERSION_PATCH_LEVEL	81
+#define VERSION_PATCH_LEVEL	83
 
 //******************
 // Protocols
@@ -309,6 +309,7 @@ struct PPM_Parameters
 	uint8_t power : 1;
 	uint8_t autobind : 1;
 	uint8_t option;
+	uint32_t chan_order;
 };
 
 // Telemetry
@@ -574,7 +575,7 @@ enum {
 #define AFHDS2A_EEPROM_OFFSET	50		// RX ID, 4 bytes per model id, end is 50+64=114
 #define BUGS_EEPROM_OFFSET		114		// RX ID, 2 bytes per model id, end is 114+32=146
 #define BUGSMINI_EEPROM_OFFSET	146		// RX ID, 2 bytes per model id, end is 146+32=178
-#define FRSKYX_RX_EEPROM_OFFSET	178		// (3) TX ID + (47) channels + (1) freq_tune, 51 bytes per model, end is 178+51=229
+#define FRSKYX_RX_EEPROM_OFFSET	178		// (3) TX ID + (1) freq_tune + (47) channels, 51 bytes per model, end is 178+51=229
 //#define CONFIG_EEPROM_OFFSET 	210		// Current configuration of the multimodule
 
 //****************************************
@@ -863,6 +864,7 @@ Serial: 100000 Baud 8e2      _ xxxx xxxx p --
    0x04 = protocol is valid
    0x08 = module is in binding mode
    0x10 = module waits a bind event to load the protocol
+   0x20 = current protocol supports failsafe
    [5] major
    [6] minor
    [7] revision
