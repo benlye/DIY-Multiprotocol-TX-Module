@@ -19,9 +19,9 @@
 #endif
 
 // Check for minimum board file definition version for DIY multi-module boards
-#define MIN_AVR_BOARD 109
-#define MIN_ORX_BOARD 109
-#define MIN_STM32_BOARD 116
+#define MIN_AVR_BOARD 110
+#define MIN_ORX_BOARD 110
+#define MIN_STM32_BOARD 117
 //AVR
 #if (defined(ARDUINO_MULTI_NO_BOOT) && ARDUINO_MULTI_NO_BOOT < MIN_AVR_BOARD) || (defined(ARDUINO_MULTI_FLASH_FROM_TX) && ARDUINO_MULTI_FLASH_FROM_TX < MIN_AVR_BOARD)
 	#error You need to update your Multi 4-in-1 board definition.  Open Boards Manager and update to the latest version of the Multi 4-in-1 AVR Boards.
@@ -174,6 +174,7 @@
 	#undef AFHDS2A_A7105_INO
 	#undef BUGS_A7105_INO
 	#undef FLYZONE_A7105_INO
+	#undef AFHDS2A_RX_A7105_INO
 #endif
 #ifndef CYRF6936_INSTALLED
 	#undef	DEVO_CYRF6936_INO
@@ -254,6 +255,8 @@
 	#undef SCANNER_CC2500_INO
 	#undef FRSKYX_RX_TELEMETRY
 	#undef FRSKYX_RX_CC2500_INO
+	#undef AFHDS2A_RX_TELEMETRY
+	#undef AFHDS2A_RX_A7105_INO
 #else
 	#if defined(MULTI_TELEMETRY) && defined(MULTI_STATUS)
 		#error You should choose either MULTI_TELEMETRY or MULTI_STATUS but not both.
@@ -265,6 +268,10 @@
 	#if not defined(FRSKYX_RX_CC2500_INO) || not defined(FRSKYX_RX_TELEMETRY)
 		#undef FRSKYX_RX_TELEMETRY
 		#undef FRSKYX_RX_CC2500_INO
+	#endif
+	#if not defined(AFHDS2A_RX_A7105_INO) || not defined(AFHDS2A_RX_TELEMETRY)
+		#undef AFHDS2A_RX_TELEMETRY
+		#undef AFHDS2A_RX_A7105_INO
 	#endif
 	#if not defined(BAYANG_NRF24L01_INO)
 		#undef BAYANG_HUB_TELEMETRY

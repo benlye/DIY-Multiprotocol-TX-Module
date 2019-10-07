@@ -1003,6 +1003,13 @@ static void protocol_init()
 						remote_callback = ReadFlyzone;
 						break;
 				#endif
+				#if defined(AFHDS2A_RX_A7105_INO)
+					case PROTO_AFHDS2A_RX:
+						PE1_off;	//antenna RF1
+						next_callback = initAFHDS2A_Rx();
+						remote_callback = AFHDS2A_Rx_callback;
+						break;
+				#endif
 			#endif
 			#ifdef CC2500_INSTALLED
 				#if defined(FRSKYD_CC2500_INO)
@@ -2010,21 +2017,4 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 			WDTCSR = 0;	// Disable Watchdog interrupt
 		}
 	}
-#endif
-
-// Set the flags for detecting and writing the firmware signature
-#if defined (CHECK_FOR_BOOTLOADER)
-    bool firmwareFlag_CHECK_FOR_BOOTLOADER = true;
-#endif
-#if defined (MULTI_STATUS)
-    bool firmwareFlag_MULTI_STATUS = true;
-#endif
-#if defined (MULTI_TELEMETRY)
-    bool firmwareFlag_MULTI_TELEMETRY = true;
-#endif
-#if defined (INVERT_TELEMETRY)
-    bool firmwareFlag_INVERT_TELEMETRY = true;
-#endif
-#if defined (DEBUG_SERIAL)
-    bool firmwareFlag_DEBUG_SERIAL = true;
 #endif

@@ -166,7 +166,7 @@ static void __attribute__((unused)) frskyx_rx_build_telemetry_packet()
 
 	// pack channels
 	for (int i = 0; i < 16; i++) {
-		bits |= frskyx_rx_rc_chan[i] << bitsavailable;
+		bits |= ((uint32_t)frskyx_rx_rc_chan[i]) << bitsavailable;
 		bitsavailable += 11;
 		while (bitsavailable >= 8) {
 			pkt[idx++] = bits & 0xff;
@@ -351,7 +351,7 @@ uint16_t FrSkyX_Rx_callback()
 		// packets per second
 		if (millis() - pps_timer >= 1000) {
 			pps_timer = millis();
-			debugln("%ld pps", pps_counter);
+			debugln("%d pps", pps_counter);
 			RX_LQI = pps_counter;
 			pps_counter = 0;
 		}
