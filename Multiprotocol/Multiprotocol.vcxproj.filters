@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Multiprotocol.ino" />
+    <None Include="A7105_SPI.ino" />
+    <None Include="AFHDS2A_a7105.ino" />
+    <None Include="AFHDS2A_Rx_a7105.ino" />
+    <None Include="Arduino.ino" />
+    <None Include="ASSAN_nrf24l01.ino" />
+    <None Include="Bayang_nrf24l01.ino" />
+    <None Include="Binary_Signature.ino" />
+    <None Include="BUGSMINI_nrf24l01.ino" />
+    <None Include="Bugs_a7105.ino" />
+    <None Include="CABELL_nrf224l01.ino" />
+    <None Include="CC2500_SPI.ino" />
+    <None Include="CFlie_nrf24l01.ino" />
+    <None Include="CG023_nrf24l01.ino" />
+    <None Include="Convert.ino" />
+    <None Include="Corona_cc2500.ino" />
+    <None Include="CX10_nrf24l01.ino" />
+    <None Include="CYRF6936_SPI.ino" />
+    <None Include="Devo_cyrf6936.ino" />
+    <None Include="DM002_nrf24l01.ino" />
+    <None Include="DSM_cyrf6936.ino" />
+    <None Include="E01X_nrf24l01.ino" />
+    <None Include="ESky150_nrf24l01.ino" />
+    <None Include="ESky_nrf24l01.ino" />
+    <None Include="FlySky_a7105.ino" />
+    <None Include="Flyzone_a7105.ino" />
+    <None Include="FQ777_nrf24l01.ino" />
+    <None Include="FrSkyDVX_common.ino" />
+    <None Include="FrSkyD_cc2500.ino" />
+    <None Include="FrSkyV_cc2500.ino" />
+    <None Include="FrSkyX_cc2500.ino" />
+    <None Include="FrSky_Rx_cc2500.ino" />
+    <None Include="FY326_nrf24l01.ino" />
+    <None Include="GD00X_nrf24l01.ino" />
+    <None Include="GW008_nrf24l01.ino" />
+    <None Include="H8_3D_nrf24l01.ino" />
+    <None Include="Hisky_nrf24l01.ino" />
+    <None Include="Hitec_cc2500.ino" />
+    <None Include="Hontai_nrf24l01.ino" />
+    <None Include="HOTT_cc2500.ino" />
+    <None Include="Hubsan_a7105.ino" />
+    <None Include="J6Pro_cyrf6936.ino" />
+    <None Include="KF606_nrf24l01.ino" />
+    <None Include="KN_nrf24l01.ino" />
+    <None Include="MJXQ_nrf24l01.ino" />
+    <None Include="MT99xx_nrf24l01.ino" />
+    <None Include="Multi_Names.ino" />
+    <None Include="NCC1701_nrf24l01.ino" />
+    <None Include="NRF24l01_SPI.ino" />
+    <None Include="POTENSIC_nrf24l01.ino" />
+    <None Include="Q303_nrf24l01.ino" />
+    <None Include="Redpine_cc2500.ino" />
+    <None Include="Scanner_cc2500.ino" />
+    <None Include="SFHSS_cc2500.ino" />
+    <None Include="SHENQI_nrf24l01.ino" />
+    <None Include="SLT_nrf24l01.ino" />
+    <None Include="SPI.ino" />
+    <None Include="Symax_nrf24l01.ino" />
+    <None Include="Telemetry.ino" />
+    <None Include="TRAXXAS_cyrf6936.ino" />
+    <None Include="V2X2_nrf24l01.ino" />
+    <None Include="V761_nrf24l01.ino" />
+    <None Include="V911S_nrf24l01.ino" />
+    <None Include="WFLY_cyrf6936.ino" />
+    <None Include="WK2x01_cyrf6936.ino" />
+    <None Include="XN297Dump_nrf24l01.ino" />
+    <None Include="XN297L_EMU.ino" />
+    <None Include="YD717_nrf24l01.ino" />
+    <None Include="ZSX_nrf24l01.ino" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="__vm\.Multiprotocol.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iface_a7105.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iface_cc2500.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iface_cyrf6936.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iface_nrf24l01.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="iface_xn297l.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiOrange.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Multiprotocol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Pins.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TX_Def.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Validate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="_Config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
