@@ -408,17 +408,15 @@
 		#define __USART_SR_TXE USART_SR_TXE
 		#define __USART_SR_RXNE USART_SR_RXNE
 
-		#define USART3_CR1 USART3_BASE->CR1
-		#define UDR0 USART2_BASE->DR
-		#define UCSR0B USART2_BASE->CR1
+		#define USART3_CR1 __USART3_BASE->CR1
+		#define UDR0 __USART2_BASE->DR
+		#define UCSR0B __USART2_BASE->CR1
 		#define RXCIE0 USART_CR1_RXNEIE_BIT
 		#define TXCIE0 USART_CR1_TXEIE_BIT
 		#define __USART_CR1_PCE_BIT USART_CR1_PCE_BIT
 	#endif
 
 #endif
-
-
 
 //*******************
 //***    SPI      ***

@@ -25,7 +25,7 @@
 //#define DEBUG_PIN		// Use pin TX for AVR and SPI_CS for STM32 => DEBUG_PIN_on, DEBUG_PIN_off, DEBUG_PIN_toggle
 //#define DEBUG_SERIAL	// Only for STM32_BOARD, compiled with Upload method "Serial"->usart1, "STM32duino bootloader"->USB serial
 
-#if defined(__arm__) || defined (STM32F3xx)			// Let's automatically select the board if arm is selected
+#if defined(__arm__)		// Let's automatically select the board if arm is selected
 	#define STM32_BOARD
 #endif
 #if defined (ARDUINO_AVR_XMEGA32D4) || defined (ARDUINO_MULTI_ORANGERX)
@@ -36,6 +36,7 @@
 
 //Multiprotocol module configuration file
 #include "_Config.h"
+
 
 //Personal config file
 #if defined(USE_MY_CONFIG)
@@ -49,9 +50,17 @@
 	// #include <libmaple/timer.h>
 	#include <SPI.h>
 	#include <EEPROM.h>	
+#ifdef STM32_BOARD_MAPLE
 	HardwareTimer HWTimer2(2);
+#else
+	HardwareTimer HWTimer2(TIM2);
+#endif
 	#ifdef ENABLE_SERIAL
-		HardwareTimer HWTimer3(3);
+		#ifdef STM32_BOARD_MAPLE
+			HardwareTimer HWTimer3(3);
+		#else
+			HardwareTimer HWTimer3(TIM3);
+		#endif
 		void ISR_COMPB();
 	#endif
 
@@ -63,9 +72,9 @@
 	}
 #endif
 
-#include "Pins.h"
 #include "TX_Def.h"
 #include "Validate.h"
+#include "Pins.h"
 
 //Global constants/variables
 uint32_t MProtocol_id;//tx id,

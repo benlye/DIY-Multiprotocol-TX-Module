@@ -15,6 +15,22 @@
  along with Multiprotocol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+ // Board types
+#if defined(ARDUINO_MULTI_STM32_FLASH_FROM_TX) ||defined(ARDUINO_MULTI_STM32_NO_BOOT) ||  defined(ARDUINO_MULTI_STM32_WITH_BOOT) 
+#define STM32_BOARD
+#define STM32_BOARD_MAPLE
+#endif
+
+#if defined(ARDUINO_MULTI_STM32F103_WITH_BOOT)
+#define STM32_BOARD
+#define STM32_BOARD_F103
+#endif
+
+#if defined(ARDUINO_MULTI_STM32F303_WITH_BOOT)
+#define STM32_BOARD
+#define STM32_BOARD_F303
+#endif
+
 //******************
 // Version
 //******************
