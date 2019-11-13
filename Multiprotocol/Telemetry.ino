@@ -12,6 +12,9 @@
  You should have received a copy of the GNU General Public License
  along with Multiprotocol.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+#include "Multiprotocol.h"
+
 //**************************
 // Telemetry serial code   *
 //**************************
@@ -988,7 +991,7 @@ void TelemetryUpdate()
 				#else
 					#ifdef STM32_BOARD
 						usart3_begin(9600,SERIAL_8N1);		//USART3 
-						USART3_BASE->CR1 &= ~ USART_CR1_RE;	//disable RX leave TX enabled
+						__USART3_BASE->CR1 &= ~ USART_CR1_RE;	//disable RX leave TX enabled
 					#else
 						UBRR0H = 0x00;
 						UBRR0L = 0x67;
@@ -1009,7 +1012,7 @@ void TelemetryUpdate()
 				#else
 					#ifdef STM32_BOARD
 						usart3_begin(57600,SERIAL_8N1);		//USART3 
-						USART3_BASE->CR1 &= ~ USART_CR1_RE;	//disable RX leave TX enabled
+						__USART3_BASE->CR1 &= ~ USART_CR1_RE;	//disable RX leave TX enabled
 					#else
 						UBRR0H = 0x00;
 						UBRR0L = 0x22;
@@ -1030,7 +1033,7 @@ void TelemetryUpdate()
 				#else
 					#ifdef STM32_BOARD
 						usart3_begin(125000,SERIAL_8N1);	//USART3 
-						USART3_BASE->CR1 &= ~ USART_CR1_RE;	//disable RX leave TX enabled
+						__USART3_BASE->CR1 &= ~ USART_CR1_RE;	//disable RX leave TX enabled
 					#else
 						UBRR0H = 0x00;
 						UBRR0L = 0x07;
@@ -1062,7 +1065,7 @@ void TelemetryUpdate()
 	#endif
 	{	// Transmit interrupt
 		#ifdef STM32_BOARD
-			if(USART3_BASE->SR & USART_SR_TXE)
+			if(__USART3_SR & __USART_SR_TXE)
 			{
 		#endif
 				if(tx_head!=tx_tail)
@@ -1070,7 +1073,7 @@ void TelemetryUpdate()
 					if(++tx_tail>=TXBUFFER_SIZE)//head 
 						tx_tail=0;
 					#ifdef STM32_BOARD	
-						USART3_BASE->DR=tx_buff[tx_tail];//clears TXE bit				
+						__USART3_DR=tx_buff[tx_tail];//clears TXE bit				
 					#else
 						UDR0=tx_buff[tx_tail];
 					#endif

@@ -21,53 +21,64 @@
 //	#define DEBUG_SPI
 #endif
 
-SPIClass SPI_2(2); 								//Create an instance of the SPI Class called SPI_2 that uses the 2nd SPI Port
-
+#ifndef STM32F3xx
+	SPIClass SPI_2(2); 								//Create an instance of the SPI Class called SPI_2 that uses the 2nd SPI Port
+#endif
 void initSPI2()
 {
 	//SPI_DISABLE();
+	#ifndef STM32F3xx
 	SPI_2.end();
-	SPI2_BASE->CR1 &= ~SPI_CR1_DFF_8_BIT;		//8 bits format, this bit should be written only when SPI is disabled (SPE = ?0?) for correct operation.
-	SPI_2.begin();								//Initialize the SPI_2 port.
+	#else
+	SPI.end();
+	#endif
 
-	SPI2_BASE->CR1 &= ~SPI_CR1_LSBFIRST;		// Set the SPI_2 bit order MSB first
-	SPI2_BASE->CR1 &= ~(SPI_CR1_CPOL|SPI_CR1_CPHA);	// Set the SPI_2 data mode 0: Clock idles low, data captured on rising edge (first transition)
-	SPI2_BASE->CR1 &= ~(SPI_CR1_BR);
-	SPI2_BASE->CR1 |= SPI_CR1_BR_PCLK_DIV_8;	// Set the speed (36 / 8 = 4.5 MHz SPI_2 speed) SPI_CR1_BR_PCLK_DIV_8
+	__SPI2_BASE->CR1 &= ~__SPI_CR1_DFF_8_BIT;		//8 bits format, this bit should be written only when SPI is disabled (SPE = ?0?) for correct operation.
+
+#ifndef STM32F3xx
+		SPI_2.begin();								//Initialize the SPI_2 port.
+	#else
+		SPI.begin(2);
+	#endif
+
+	__SPI2_BASE->CR1 &= ~SPI_CR1_LSBFIRST;		// Set the SPI_2 bit order MSB first
+	__SPI2_BASE->CR1 &= ~(SPI_CR1_CPOL|SPI_CR1_CPHA);	// Set the SPI_2 data mode 0: Clock idles low, data captured on rising edge (first transition)
+	__SPI2_BASE->CR1 &= ~(SPI_CR1_BR);
+	__SPI2_BASE->CR1 |= __SPI_CR1_BR_PCLK_DIV_8;	// Set the speed (36 / 8 = 4.5 MHz SPI_2 speed) SPI_CR1_BR_PCLK_DIV_8
 }
-	
+
 void SPI_Write(uint8_t command)
 {//working OK	
-	SPI2_BASE->DR = command;					//Write the first data item to be transmitted into the SPI_DR register (this clears the TXE flag).
+	__SPI2_BASE->DR = command;					//Write the first data item to be transmitted into the SPI_DR register (this clears the TXE flag).
 	#ifdef DEBUG_SPI
 		debug("%02X ",command);
 	#endif
-	while (!(SPI2_BASE->SR & SPI_SR_RXNE));
-	command = SPI2_BASE->DR;					// ... and read the last received data.
+	while (!(__SPI2_BASE->SR & SPI_SR_RXNE));
+	command = __SPI2_BASE->DR;					// ... and read the last received data.
 }
 
 uint8_t SPI_Read(void)
 {
 	SPI_Write(0x00);		
-	return SPI2_BASE->DR;
+	return __SPI2_BASE->DR;
 }
 
 uint8_t SPI_SDI_Read()
 {	
 	uint8_t rx=0;
 	cli();	//Fix Hubsan droputs??
-	while(!(SPI2_BASE->SR & SPI_SR_TXE));
-	while((SPI2_BASE->SR & SPI_SR_BSY));	
+	while(!(__SPI2_BASE->SR & SPI_SR_TXE));
+	while((__SPI2_BASE->SR & SPI_SR_BSY));
 	//	
 	SPI_DISABLE();
 	SPI_SET_BIDIRECTIONAL();
-	volatile uint8_t x = SPI2_BASE->DR;
+	volatile uint8_t x = __SPI2_BASE->DR;
 	(void)x;
 	SPI_ENABLE();
 	//
 	SPI_DISABLE();				  
-	while(!(SPI2_BASE->SR& SPI_SR_RXNE));
-	rx=SPI2_BASE->DR;
+	while(!(__SPI2_BASE->SR& SPI_SR_RXNE));
+	rx= __SPI2_BASE->DR;
 	SPI_SET_UNIDIRECTIONAL();
 	SPI_ENABLE();
 	sei();//fix Hubsan dropouts??
@@ -76,23 +87,23 @@ uint8_t SPI_SDI_Read()
 
 void SPI_ENABLE()
 {
-	SPI2_BASE->CR1 |= SPI_CR1_SPE;
+	__SPI2_BASE->CR1 |= SPI_CR1_SPE;
 }
 
 void SPI_DISABLE()
 {
-	SPI2_BASE->CR1 &= ~SPI_CR1_SPE;
+	__SPI2_BASE->CR1 &= ~SPI_CR1_SPE;
 }
 
 void SPI_SET_BIDIRECTIONAL()
 {
-	SPI2_BASE->CR1 |= SPI_CR1_BIDIMODE;
-	SPI2_BASE->CR1  &= ~ SPI_CR1_BIDIOE;//receive only
+	__SPI2_BASE->CR1 |= SPI_CR1_BIDIMODE;
+	__SPI2_BASE->CR1  &= ~ SPI_CR1_BIDIOE;//receive only
 }
 
 void SPI_SET_UNIDIRECTIONAL()
 {
-	SPI2_BASE->CR1 &= ~SPI_CR1_BIDIMODE;
+	__SPI2_BASE->CR1 &= ~SPI_CR1_BIDIMODE;
 }
 
 #else

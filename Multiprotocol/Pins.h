@@ -315,7 +315,14 @@
 
 	#define	cli() 			noInterrupts()
 	#define	sei() 			interrupts()
+
 	#define	delayMilliseconds(x) delay(x)
+
+	#ifdef STM32F3xx
+		#define __GPIOA_IDR GPIOA->IDR
+	#else
+		#define __GPIOA_IDR GPIOA->regs->IDR
+	#endif	
 #endif
 
 //*******************
@@ -334,14 +341,34 @@
 	#define CLR_TIMSK1_OCIE1B	TIMSK1 &= 0xF3
 #else
 	#ifdef STM32_BOARD
-		#define OCR1A TIMER2_BASE->CCR1
-		#define TCNT1 TIMER2_BASE->CNT
-		#define TIFR1 TIMER2_BASE->SR
-		#define OCF1A_bm TIMER_SR_CC1IF
-		#define UDR0 USART2_BASE->DR
-		#define UCSR0B USART2_BASE->CR1
-		#define RXCIE0 USART_CR1_RXNEIE_BIT
-		#define TXCIE0 USART_CR1_TXEIE_BIT
+		#ifdef STM32F3xx
+			#define __TIMER_CH1 TIM_CHANNEL_1
+			#define __TIMER_CH2 TIM_CHANNEL_2
+			#define __TIMER2_BASE TIM2
+			#define __TIMER3_BASE TIM3
+			#define __TIMER_SR_CC1IF TIM_SR_CC1IF
+			#define __TIMER_SR_CC2IF TIM_SR_CC2IF
+			#define __TIMER_DIER_CC2IE TIM_DIER_CC2IE
+			#define OCR1A TIM2->CCR1
+			#define TCNT1 TIM2->CNT
+			#define TIFR1 TIM2->SR
+			#define OCF1A_bm TIM_SR_CC1IF
+			
+		#else
+			#define __TIMER_CH1 TIMER_CH1
+			#define __TIMER_CH2 TIMER_CH2
+			#define __TIMER2_BASE TIMER2_BASE
+			#define __TIMER3_BASE TIMER3_BASE
+			#define __TIMER_SR_CC1IF TIMER_SR_CC1IF
+			#define __TIMER_SR_CC2IF TIMER_SR_CC2IF
+			#define __TIMER_DIER_CC2IE TIMER_DIER_CC2IE
+			#define OCR1A TIMER2_BASE->CCR1
+			#define TCNT1 TIMER2_BASE->CNT
+			#define TIFR1 TIMER2_BASE->SR
+			#define OCF1A_bm TIMER_SR_CC1IF
+		#endif
+
+
 		//#define TIFR1 TIMER2_BASE->SR
 	#else
 		#define OCF1A_bm _BV(OCF1A)
@@ -351,11 +378,68 @@
 	#endif
 #endif
 
+// ******************
+//***    Serial   ***
+//*******************
+#ifdef STM32_BOARD
+	#ifdef STM32F3xx
+		#define __USART2_BASE USART2
+		#define __USART3_BASE USART3
+		#define __USART2_SR __USART2_BASE->ISR
+		#define __USART3_SR __USART3_BASE->ISR
+		#define __USART3_DR __USART3_BASE->RDR
+
+		#define __USART_SR_TXE USART_ISR_TXE
+		#define __USART_SR_RXNE USART_ISR_RXNE
+
+		#define USART3_CR1 USART3->CR1
+		#define UDR0 USART2->RDR
+		#define UCSR0B USART2->CR1
+		#define RXCIE0 USART_CR1_RXNEIE
+		#define TXCIE0 USART_CR1_TXEIE
+		#define __USART_CR1_PCE_BIT USART_CR1_PCE
+	#else
+		#define __USART2_BASE USART2_BASE
+		#define __USART3_BASE USART3_BASE
+		#define __USART2_SR __USART2_BASE->SR
+		#define __USART3_SR __USART3_BASE->SR
+		#define __USART3_DR __USART3_BASE->DR
+
+		#define __USART_SR_TXE USART_SR_TXE
+		#define __USART_SR_RXNE USART_SR_RXNE
+
+		#define USART3_CR1 USART3_BASE->CR1
+		#define UDR0 USART2_BASE->DR
+		#define UCSR0B USART2_BASE->CR1
+		#define RXCIE0 USART_CR1_RXNEIE_BIT
+		#define TXCIE0 USART_CR1_TXEIE_BIT
+		#define __USART_CR1_PCE_BIT USART_CR1_PCE_BIT
+	#endif
+
+#endif
+
+
+
+//*******************
+//***    SPI      ***
+//*******************
+#ifdef STM32_BOARD
+	#ifdef STM32F3xx
+		#define __SPI2_BASE SPI2
+		#define __SPI_CR1_DFF_8_BIT SPI_DATASIZE_8BIT
+		#define __SPI_CR1_BR_PCLK_DIV_8 SPI_CLOCK_DIV8
+	#else
+		#define __SPI2_BASE SPI2_BASE
+		#define __SPI_CR1_DFF_8_BIT SPI_CR1_DFF_8_BIT
+		#define __SPI_CR1_BR_PCLK_DIV_8 SPI_CR1_BR_PCLK_DIV_8
+	#endif // STM32F3xx
+#endif // STM32_BOARD
+
 //*******************
 //***    EEPROM   ***
 //*******************
 #ifdef STM32_BOARD
-	#define EE_ADDR uint16
+	#define EE_ADDR uint16_t
 	#define eeprom_write_byte EEPROM.write
 	#define eeprom_read_byte EEPROM.read
 #else

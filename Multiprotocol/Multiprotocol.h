@@ -1,3 +1,5 @@
+#ifndef __MULTIPROTOCOL_H
+#define __MULTIPROTOCOL_H
 /*
  This project is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -987,3 +989,4 @@ Serial: 100000 Baud 8e2      _ xxxx xxxx p --
    data[4-13] = data
 
 */
+#endif
