@@ -13,6 +13,34 @@
  along with Multiprotocol.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+ //******************
+ // Board Types
+ //******************
+#if defined(ARDUINO_AVR_PRO) ||defined(ARDUINO_MULTI_NO_BOOT) || defined(ARDUINO_MULTI_FLASH_FROM_TX) || defined(ARDUINO_AVR_MINI) || defined(ARDUINO_AVR_NANO)
+#define AVR_BOARD
+#define BOARD_ATMEGA328P
+#endif
+
+#if defined (ARDUINO_AVR_XMEGA32D4) || defined (ARDUINO_MULTI_ORANGERX)
+#define AVR_BOARD
+#define BOARD_ORANGE
+#endif
+
+#if defined(ARDUINO_MULTI_STM32_FLASH_FROM_TX) || defined(ARDUINO_MULTI_STM32_NO_BOOT) || defined(ARDUINO_MULTI_STM32_WITH_BOOT) 
+#define STM32_BOARD
+#define BOARD_MAPLE
+#endif
+
+#if defined(ARDUINO_MULTI_STM32F103_WITH_BOOT)
+#define STM32_BOARD
+#define BOARD_STM32F103
+#endif
+
+#if defined(ARDUINO_MULTI_STM32F303_WITH_BOOT)
+#define STM32_BOARD
+#define BOARD_STM32F303
+#endif
+
 //******************
 // Version
 //******************

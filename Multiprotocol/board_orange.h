@@ -1,3 +1,7 @@
+#ifndef BOARD_ORANGE_H
+#define BOARD_ORANGE_H
+#ifdef BOARD_ORANGE
+
 //#define ARDUINO_AVR_PRO		1
 
 #define ORANGE_TX	1
@@ -89,3 +93,6 @@ void init()
 	PORTA.PIN6CTRL = 0x18 ;
 	PORTA.PIN7CTRL = 0x18 ;
 }
+
+#endif // BOARD_ORANGE
+#endif // !BOARD_ORANGE_H

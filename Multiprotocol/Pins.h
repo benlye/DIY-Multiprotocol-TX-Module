@@ -334,14 +334,7 @@
 	#define CLR_TIMSK1_OCIE1B	TIMSK1 &= 0xF3
 #else
 	#ifdef STM32_BOARD
-		#define OCR1A TIMER2_BASE->CCR1
-		#define TCNT1 TIMER2_BASE->CNT
-		#define TIFR1 TIMER2_BASE->SR
-		#define OCF1A_bm TIMER_SR_CC1IF
-		#define UDR0 USART2_BASE->DR
-		#define UCSR0B USART2_BASE->CR1
-		#define RXCIE0 USART_CR1_RXNEIE_BIT
-		#define TXCIE0 USART_CR1_TXEIE_BIT
+
 		//#define TIFR1 TIMER2_BASE->SR
 	#else
 		#define OCF1A_bm _BV(OCF1A)
@@ -349,15 +342,4 @@
 		#define SET_TIMSK1_OCIE1B	TIMSK1 |= _BV(OCIE1B)
 		#define CLR_TIMSK1_OCIE1B	TIMSK1 &=~_BV(OCIE1B)
 	#endif
-#endif
-
-//*******************
-//***    EEPROM   ***
-//*******************
-#ifdef STM32_BOARD
-	#define EE_ADDR uint16
-	#define eeprom_write_byte EEPROM.write
-	#define eeprom_read_byte EEPROM.read
-#else
-	#define EE_ADDR uint8_t*
 #endif

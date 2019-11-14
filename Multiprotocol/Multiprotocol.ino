@@ -25,13 +25,6 @@
 //#define DEBUG_PIN		// Use pin TX for AVR and SPI_CS for STM32 => DEBUG_PIN_on, DEBUG_PIN_off, DEBUG_PIN_toggle
 //#define DEBUG_SERIAL	// Only for STM32_BOARD, compiled with Upload method "Serial"->usart1, "STM32duino bootloader"->USB serial
 
-#ifdef __arm__			// Let's automatically select the board if arm is selected
-	#define STM32_BOARD
-#endif
-#if defined (ARDUINO_AVR_XMEGA32D4) || defined (ARDUINO_MULTI_ORANGERX)
-	#include "MultiOrange.h"
-#endif
-
 #include "Multiprotocol.h"
 
 //Multiprotocol module configuration file
@@ -48,15 +41,15 @@
 
 #ifndef STM32_BOARD
 	#include <avr/eeprom.h>
+	#include "board_avr.h"
 #else
-	#include <libmaple/usart.h>
-	#include <libmaple/timer.h>
-	//#include <libmaple/spi.h>
 	#include <SPI.h>
-	#include <EEPROM.h>	
-	HardwareTimer HWTimer2(2);
+	#include <EEPROM.h>
+	#include "board_stm32.h"
+
+	HardwareTimer HWTimer2(__HARDWARE_TIMER_2);
 	#ifdef ENABLE_SERIAL
-		HardwareTimer HWTimer3(3);
+		HardwareTimer HWTimer3(__HARDWARE_TIMER_3);
 		void ISR_COMPB();
 	#endif
 
@@ -303,7 +296,7 @@ void setup()
 		TCC1.CTRLA = 0x0B ;	// Event3 (prescale of 16)
 	#elif defined STM32_BOARD
 		//STM32
-		afio_cfg_debug_ports(AFIO_DEBUG_NONE);
+		__DISABLE_DEBUG_PORT;
 		pinMode(LED2_pin,OUTPUT);
 		pinMode(A7105_CSN_pin,OUTPUT);
 		pinMode(CC25_CSN_pin,OUTPUT);
@@ -414,7 +407,7 @@ void setup()
 	#ifndef ENABLE_PPM
 		mode_select = MODE_SERIAL ;	// force serial mode
 	#elif defined STM32_BOARD
-		mode_select= 0x0F -(uint8_t)(((GPIOA->regs->IDR)>>4)&0x0F);
+		__MODE_SELECT;
 	#else
 		mode_select =
 			((PROTO_DIAL1_ipr & _BV(PROTO_DIAL1_pin)) ? 0 : 1) + 
@@ -593,11 +586,7 @@ void loop()
 		tx_resume();
 		cli();										// Disable global int due to RW of 16 bits registers
 		OCR1A+=next_callback;						// Calc when next_callback should happen
-		#ifndef STM32_BOARD			
-			TIFR1=OCF1A_bm;							// Clear compare A=callback flag
-		#else
-			TIMER2_BASE->SR = 0x1E5F & ~TIMER_SR_CC1IF;	// Clear Timer2/Comp1 interrupt flag
-		#endif		
+		__TIMER2_CLEAR;								// Clear timer flags
 		diff=OCR1A-TCNT1;							// Calc the time difference
 		sei();										// Enable global int
 		if((diff&0x8000) && !(next_callback&0x8000))
@@ -615,11 +604,7 @@ void loop()
 					Update_All();
 				}
 			}
-			#ifndef STM32_BOARD
-				while((TIFR1 & OCF1A_bm) == 0)
-			#else
-				while((TIMER2_BASE->SR & TIMER_SR_CC1IF )==0)
-			#endif
+			while ((__TIMER2_CHECK_CC1IF) == 0)
 			{
 				if(diff>900*2)
 				{	//If at least 1ms is available update values 
@@ -631,7 +616,7 @@ void loop()
 					count=0;
 					Update_All();
 					#ifdef DEBUG_SERIAL
-						if(TIMER2_BASE->SR & TIMER_SR_CC1IF )
+						if(__TIMER2_CHECK_CC1IF)
 							debugln("Long update");
 					#endif
 					if(remote_callback==0)
@@ -918,11 +903,7 @@ inline void tx_pause()
 			USARTC0.CTRLA &= ~0x03 ;
 		#else
 			#ifndef BASH_SERIAL
-				#ifdef STM32_BOARD
-					USART3_BASE->CR1 &= ~ USART_CR1_TXEIE;
-				#else
-					UCSR0B &= ~_BV(UDRIE0);
-				#endif
+				__TELEMETRY_TX_INTERUPT_DISABLE;
 			#endif
 		#endif
 	#endif
@@ -940,11 +921,7 @@ inline void tx_resume()
 				sei() ;
 			#else
 				#ifndef BASH_SERIAL
-					#ifdef STM32_BOARD
-						USART3_BASE->CR1 |= USART_CR1_TXEIE;
-					#else
-						UCSR0B |= _BV(UDRIE0);			
-					#endif
+					__TELEMETRY_TX_INTERUPT_ENABLE;
 				#else
 					resumeBashSerial();
 				#endif
@@ -1470,11 +1447,7 @@ static void protocol_init()
 	}
 	cli();										// disable global int
 	OCR1A = TCNT1 + next_callback*2;			// set compare A for callback
-	#ifndef STM32_BOARD
-		TIFR1 = OCF1A_bm ;						// clear compare A flag
-	#else
-		TIMER2_BASE->SR = 0x1E5F & ~TIMER_SR_CC1IF;	// Clear Timer2/Comp1 interrupt flag
-	#endif	
+	__TIMER2_CLEAR;
 	sei();										// enable global int
 	BIND_BUTTON_FLAG_off;						// do not bind/reset id anymore even if protocol change
 }
@@ -1817,18 +1790,18 @@ void modules_reset()
 			if ( boot )
 			{
 				usart2_begin(57600,SERIAL_8N1);
-				USART2_BASE->CR1 &= ~USART_CR1_RXNEIE ;
+				__TELEMETRY_RX_INTERRUPT_DISABLE;
 				(void)UDR0 ;
 			}
 			else
 		#endif // CHECK_FOR_BOOTLOADER
 		{
 			usart2_begin(100000,SERIAL_8E2);
-			USART2_BASE->CR1 |= USART_CR1_PCE_BIT;
+			UCSR0B |= __USART_CR1_PCE;
 		}
 		usart3_begin(100000,SERIAL_8E2);
-		USART3_BASE->CR1 &= ~ USART_CR1_RE;		//disable receive
-		USART2_BASE->CR1 &= ~ USART_CR1_TE;		//disable transmit
+		__TELEMETRY_RX_DISABLE;		//disable receive
+		__TELEMETRY_TX_DISABLE;		//disable transmit
 	#else
 		//ATMEGA328p
 		#include <util/setbaud.h>	

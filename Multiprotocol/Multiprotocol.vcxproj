@@ -1,0 +1,354 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C5F80730-F44F-4478-BDAE-6634EFC2CA88}</ProjectGuid>
+    <RootNamespace>
+    </RootNamespace>
+    <ProjectName>Multiprotocol</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>
+    </PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>
+    </PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>
+    </PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>
+    </PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\Multiprotocol;$(ProjectDir)..\..\..\AppData\Local\arduino15\packages\multi4in1-devel\hardware\STM32F1\1.1.7\libraries\SPI\src;$(ProjectDir)..\..\..\AppData\Local\arduino15\packages\multi4in1-devel\hardware\STM32F1\1.1.7\libraries\EEPROM;$(ProjectDir)..\..\..\AppData\Local\arduino15\packages\multi4in1-devel\hardware\STM32F1\1.1.7\cores\maple;$(ProjectDir)..\..\..\AppData\Local\arduino15\packages\multi4in1-devel\hardware\STM32F1\1.1.7\cores\maple\avr;$(ProjectDir)..\..\..\AppData\Local\arduino15\packages\multi4in1-devel\hardware\STM32F1\1.1.7\cores\maple\libmaple;$(ProjectDir)..\..\..\AppData\Local\arduino15\packages\multi4in1-devel\hardware\STM32F1\1.1.7\cores\maple\stm32f1;$(ProjectDir)..\..\..\AppData\Local\arduino15\packages\multi4in1-devel\hardware\STM32F1\1.1.7\variants\generic_stm32f103c;$(ProjectDir)..\..\..\AppData\Local\arduino15\packages\multi4in1-devel\hardware\STM32F1\1.1.7\system\libmaple;$(ProjectDir)..\..\..\AppData\Local\arduino15\packages\multi4in1-devel\hardware\STM32F1\1.1.7\system\libmaple\include;$(ProjectDir)..\..\..\AppData\Local\arduino15\packages\multi4in1-devel\hardware\STM32F1\1.1.7\system\libmaple\stm32f1\include;$(ProjectDir)..\..\..\AppData\Local\arduino15\packages\multi4in1-devel\hardware\STM32F1\1.1.7\system\libmaple\usb\stm32f1;$(ProjectDir)..\..\..\AppData\Local\arduino15\packages\multi4in1-devel\hardware\STM32F1\1.1.7\system\libmaple\usb\usb_lib;$(ProjectDir)..\..\..\AppData\Local\arduino15\packages\multi4in1-devel\hardware\STM32F1;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(ProjectDir)__vm\.Multiprotocol.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <PreprocessorDefinitions>DEBUG_LEVEL=DEBUG_NONE;BOARD_generic_stm32f103c;VECT_TAB_ADDR=0x8002000;ERROR_LED_PORT=GPIOB;ERROR_LED_PIN=1;F_CPU=72000000L;ARDUINO=108010;ARDUINO_MULTI_STM32_WITH_BOOT=117;ARDUINO_ARCH_STM32F1;SERIAL_USB;GENERIC_BOOTLOADER;MCU_STM32F103CB;__STM32F1__;__cplusplus=201103L;_VMICRO_INTELLISENSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="VisualMicro" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="A7105_SPI.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="AFHDS2A_a7105.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="AFHDS2A_Rx_a7105.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Arduino.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="ASSAN_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Bayang_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Binary_Signature.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="BUGSMINI_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Bugs_a7105.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="CABELL_nrf224l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="CC2500_SPI.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="CFlie_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="CG023_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Convert.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Corona_cc2500.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="CX10_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="CYRF6936_SPI.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Devo_cyrf6936.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="DM002_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="DSM_cyrf6936.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="E01X_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="ESky150_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="ESky_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="FlySky_a7105.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Flyzone_a7105.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="FQ777_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="FrSkyDVX_common.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="FrSkyD_cc2500.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="FrSkyV_cc2500.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="FrSkyX_cc2500.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="FrSky_Rx_cc2500.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="FY326_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="GD00X_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="GW008_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="H8_3D_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Hisky_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Hitec_cc2500.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Hontai_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="HOTT_cc2500.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Hubsan_a7105.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="J6Pro_cyrf6936.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="KF606_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="KN_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="MJXQ_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="MT99xx_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Multiprotocol.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Multi_Names.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="NCC1701_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="NRF24l01_SPI.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="POTENSIC_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Q303_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Redpine_cc2500.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Scanner_cc2500.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="SFHSS_cc2500.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="SHENQI_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="SLT_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="SPI.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Symax_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="Telemetry.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="TRAXXAS_cyrf6936.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="V2X2_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="V761_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="V911S_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="WFLY_cyrf6936.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="WK2x01_cyrf6936.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="XN297Dump_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="XN297L_EMU.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="YD717_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+    <None Include="ZSX_nrf24l01.ino">
+      <FileType>CppCode</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="iface_a7105.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="iface_cc2500.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="iface_cyrf6936.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="iface_nrf24l01.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="iface_xn297l.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="MultiOrange.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="Multiprotocol.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="Pins.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="TX_Def.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="Validate.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="_Config.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="__vm\.Multiprotocol.vsarduino.h" />
+  </ItemGroup>
+  <PropertyGroup>
+    <DebuggerFlavor>VisualMicroDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
