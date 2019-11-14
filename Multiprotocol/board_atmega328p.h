@@ -5,5 +5,7 @@
 #define __TIMER2_CLEAR_COMP1 TIFR1=OCF1A_bm			// Clear compare A=callback flag
 #define __TIMER2_CHECK_CC1IF TIFR1 & OCF1A_bm
 
+#define __TELEMETRY_RX_HAS_DATA UCSR0A & ( 1 << RXC0 )
+
 #endif // BOARD_ATMEGA328P
 #endif // !BOARD_ATMEGA328P_H

@@ -987,8 +987,8 @@ void TelemetryUpdate()
 					USARTC0.CTRLC = 0x03 ;
 				#else
 					#ifdef STM32_BOARD
-						usart3_begin(9600,SERIAL_8N1);		//USART3 
-						USART3_BASE->CR1 &= ~ USART_CR1_RE;	//disable RX leave TX enabled
+						usart3_begin(9600, __SERIAL_8N1);		//USART3 
+						__USART3_RX_DISABLE;
 					#else
 						UBRR0H = 0x00;
 						UBRR0L = 0x67;
@@ -1008,8 +1008,8 @@ void TelemetryUpdate()
 					USARTC0.CTRLC = 0x03 ;*/
 				#else
 					#ifdef STM32_BOARD
-						usart3_begin(57600,SERIAL_8N1);		//USART3 
-						USART3_BASE->CR1 &= ~ USART_CR1_RE;	//disable RX leave TX enabled
+						usart3_begin(57600, __SERIAL_8N1);		//USART3 
+						__USART3_RX_DISABLE;
 					#else
 						UBRR0H = 0x00;
 						UBRR0L = 0x22;
@@ -1029,8 +1029,8 @@ void TelemetryUpdate()
 					USARTC0.CTRLC = 0x03 ;*/
 				#else
 					#ifdef STM32_BOARD
-						usart3_begin(125000,SERIAL_8N1);	//USART3 
-						USART3_BASE->CR1 &= ~ USART_CR1_RE;	//disable RX leave TX enabled
+						usart3_begin(125000, __SERIAL_8N1);	//USART3 
+						__USART3_RX_DISABLE;
 					#else
 						UBRR0H = 0x00;
 						UBRR0L = 0x07;
@@ -1062,15 +1062,15 @@ void TelemetryUpdate()
 	#endif
 	{	// Transmit interrupt
 		#ifdef STM32_BOARD
-			if(USART3_BASE->SR & USART_SR_TXE)
+			if(__USART3_SR & __USART_SR_TXE)
 			{
 		#endif
 				if(tx_head!=tx_tail)
 				{
-					if(++tx_tail>=TXBUFFER_SIZE)//head 
+					if(++tx_tail >= TXBUFFER_SIZE)//head 
 						tx_tail=0;
 					#ifdef STM32_BOARD	
-						USART3_BASE->DR=tx_buff[tx_tail];//clears TXE bit				
+					__USART3_DR = tx_buff[tx_tail];//clears TXE bit				
 					#else
 						UDR0=tx_buff[tx_tail];
 					#endif

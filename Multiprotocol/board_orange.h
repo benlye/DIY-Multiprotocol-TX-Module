@@ -94,5 +94,7 @@ void init()
 	PORTA.PIN7CTRL = 0x18 ;
 }
 
+#define __TELEMETRY_RX_HAS_DATA USARTC0.STATUS & USART_RXCIF_bm
+
 #endif // BOARD_ORANGE
 #endif // !BOARD_ORANGE_H

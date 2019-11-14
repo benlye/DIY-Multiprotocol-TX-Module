@@ -9,6 +9,9 @@
 #define eeprom_write_byte EEPROM.write
 #define eeprom_read_byte EEPROM.read
 
+#define __SERIAL_8N1 0B00000000
+#define __SERIAL_8E2 0B00101010
+
 #ifdef BOARD_MAPLE
 #include <libmaple/usart.h>
 #include <libmaple/timer.h>

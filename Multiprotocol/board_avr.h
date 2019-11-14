@@ -8,7 +8,7 @@
 #define EE_ADDR uint8_t*
 
 #ifdef BOARD_ATMEGA328P
-#include "board_atmega328p.h
+#include "board_atmega328p.h"
 #endif
 #ifdef BOARD_ORANGE
 #include "board_orange.h"

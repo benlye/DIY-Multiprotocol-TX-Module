@@ -253,7 +253,7 @@ void setup()
 {
 	// Setup diagnostic uart before anything else
 	#ifdef DEBUG_SERIAL
-		Serial.begin(115200,SERIAL_8N1);
+		Serial.begin(115200, __SERIAL_8N1);
 
 		// Wait up to 30s for a serial connection; double-blink the LED while we wait
 		unsigned long currMillis = millis();
@@ -1789,19 +1789,19 @@ void modules_reset()
 		#ifdef CHECK_FOR_BOOTLOADER
 			if ( boot )
 			{
-				usart2_begin(57600,SERIAL_8N1);
+				usart2_begin(57600, __SERIAL_8N1);
 				__TELEMETRY_RX_INTERRUPT_DISABLE;
 				(void)UDR0 ;
 			}
 			else
 		#endif // CHECK_FOR_BOOTLOADER
 		{
-			usart2_begin(100000,SERIAL_8E2);
+			usart2_begin(100000, __SERIAL_8E2);
 			UCSR0B |= __USART_CR1_PCE;
 		}
-		usart3_begin(100000,SERIAL_8E2);
-		__TELEMETRY_RX_DISABLE;		//disable receive
-		__TELEMETRY_TX_DISABLE;		//disable transmit
+		usart3_begin(100000, __SERIAL_8E2);
+		__USART3_RX_DISABLE;		//disable receive
+		__USART2_TX_DISABLE;		//disable transmit
 	#else
 		//ATMEGA328p
 		#include <util/setbaud.h>	
@@ -1833,21 +1833,6 @@ void modules_reset()
 }
 
 #ifdef STM32_BOARD
-	void usart2_begin(uint32_t baud,uint32_t config )
-	{
-		usart_init(USART2); 
-		usart_config_gpios_async(USART2,GPIOA,PIN_MAP[PA3].gpio_bit,GPIOA,PIN_MAP[PA2].gpio_bit,config);
-		LED2_output;
-		usart_set_baud_rate(USART2, STM32_PCLK1, baud);
-		usart_enable(USART2);
-	}
-	void usart3_begin(uint32_t baud,uint32_t config )
-	{
-		usart_init(USART3);
-		usart_config_gpios_async(USART3,GPIOB,PIN_MAP[PB11].gpio_bit,GPIOB,PIN_MAP[PB10].gpio_bit,config);
-		usart_set_baud_rate(USART3, STM32_PCLK1, baud);
-		usart_enable(USART3);
-	}
 	void init_HWTimer()
 	{	
 		HWTimer2.pause();									// Pause the timer2 while we're configuring it
@@ -1855,7 +1840,7 @@ void modules_reset()
 		__TIMER2_BASE->ARR = 0xFFFF;							// Count until 0xFFFF
 		HWTimer2.setMode(__TIMER_CH1, TIMER_OUTPUT_COMPARE);	// Main scheduler
 		__TIMER2_BASE->SR = 0x1E5F & ~__TIMER_SR_CC2IF;			// Clear Timer2/Comp2 interrupt flag
-		__TIMER2_BASE->DIER &= ~TIMER_DIER_CC2IE;				// Disable Timer2/Comp2 interrupt
+		__TIMER2_BASE->DIER &= ~__TIMER_DIER_CC2IE;				// Disable Timer2/Comp2 interrupt
 		HWTimer2.refresh();									// Refresh the timer's count, prescale, and overflow
 		HWTimer2.resume();
 
@@ -1864,9 +1849,9 @@ void modules_reset()
 			__TIMER3_BASE->PSC = 35;								// 36-1;for 72 MHZ /0.5sec/(35+1)
 			__TIMER3_BASE->ARR = 0xFFFF;							// Count until 0xFFFF
 			HWTimer3.setMode(__TIMER_CH2, TIMER_OUTPUT_COMPARE);	// Serial check
-			__TIMER3_BASE->SR = 0x1E5F & ~TIMER_SR_CC2IF;			// Clear Timer3/Comp2 interrupt flag
-			HWTimer3.attachInterrupt(__TIMER_CH2,ISR_COMPB);		// Assign function to Timer3/Comp2 interrupt
-			__TIMER3_BASE->DIER &= ~TIMER_DIER_CC2IE;				// Disable Timer3/Comp2 interrupt
+			__TIMER3_BASE->SR = 0x1E5F & ~__TIMER_SR_CC2IF;			// Clear Timer3/Comp2 interrupt flag
+			HWTimer3.attachInterrupt(__TIMER_CH2, ISR_COMPB);		// Assign function to Timer3/Comp2 interrupt
+			__TIMER3_BASE->DIER &= ~__TIMER_DIER_CC2IE;				// Disable Timer3/Comp2 interrupt
 			HWTimer3.refresh();									// Refresh the timer's count, prescale, and overflow
 			HWTimer3.resume();
 		#endif
@@ -1880,13 +1865,7 @@ void pollBoot()
 	uint8_t lState = BootState ;
 	uint8_t millisTime = millis();				// Call this once only
 
-	#ifdef ORANGE_TX
-	if ( USARTC0.STATUS & USART_RXCIF_bm )
-	#elif defined STM32_BOARD
-	if ( USART2_BASE->SR & USART_SR_RXNE )
-	#else
-	if ( UCSR0A & ( 1 << RXC0 ) )
-	#endif
+	if (__TELEMETRY_RX_HAS_DATA)
 	{
 		rxchar = UDR0 ;
 		BootCount += 1 ;
@@ -1922,7 +1901,7 @@ void pollBoot()
 				else if ( lState == BOOT_READY )
 				{
 					#ifdef	STM32_BOARD
-						nvic_sys_reset();
+						__NVIC_SYS_RESET();
 						while(1);						/* wait until reset */
 					#else
 						cli();							// Disable global int due to RW of 16 bits registers
@@ -2082,7 +2061,7 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 		#ifdef ORANGE_TX
 			if((USARTC0.STATUS & 0x1C)==0)							// Check frame error, data overrun and parity error
 		#elif defined STM32_BOARD
-			if((USART2_BASE->SR & USART_SR_RXNE) && (USART2_BASE->SR &0x0F)==0)					
+			if((__TELEMETRY_RX_HAS_DATA) && (__USART2_SR &0x0F)==0)
 		#else
 			UCSR0B &= ~_BV(RXCIE0) ;								// RX interrupt disable
 			sei() ;
@@ -2101,9 +2080,9 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 				#endif
 				{
 					#if defined STM32_BOARD
-						TIMER3_BASE->CCR2=TIMER3_BASE->CNT + 500;	// Next byte should show up within 250us (1 byte = 120us)
-						TIMER3_BASE->SR = 0x1E5F & ~TIMER_SR_CC2IF;	// Clear Timer3/Comp2 interrupt flag
-						TIMER3_BASE->DIER |= TIMER_DIER_CC2IE;		// Enable Timer3/Comp2 interrupt
+						__TIMER3_BASE->CCR2= __TIMER3_BASE->CNT + 500;	// Next byte should show up within 250us (1 byte = 120us)
+						__TIMER3_BASE->SR = 0x1E5F & ~__TIMER_SR_CC2IF;	// Clear Timer3/Comp2 interrupt flag
+						__TIMER3_BASE->DIER |= __TIMER_DIER_CC2IE;		// Enable Timer3/Comp2 interrupt
 					#else
 						TX_RX_PAUSE_on;
 						tx_pause();
@@ -2127,7 +2106,7 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 				{
 					rx_buff[rx_idx++]=UDR0;							// Store received byte
 					#if defined STM32_BOARD
-						TIMER3_BASE->CCR2=TIMER3_BASE->CNT + 500;	// Next byte should show up within 250us (1 byte = 120us)
+					__TIMER3_BASE->CCR2= __TIMER3_BASE->CNT + 500;	// Next byte should show up within 250us (1 byte = 120us)
 					#else
 						cli();										// Disable global int due to RW of 16 bits registers
 						OCR1B = TCNT1 + 500;						// Next byte should show up within 250us (1 byte = 120us)
@@ -2146,7 +2125,7 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 		if(discard_frame==true)
 		{
 			#ifdef STM32_BOARD
-				TIMER3_BASE->DIER &= ~TIMER_DIER_CC2IE;				// Disable Timer3/Comp2 interrupt
+			__TIMER3_BASE->DIER &= ~__TIMER_DIER_CC2IE;				// Disable Timer3/Comp2 interrupt
 			#else							
 				CLR_TIMSK1_OCIE1B;									// Disable interrupt on compare B match
 				TX_RX_PAUSE_off;
@@ -2191,7 +2170,7 @@ static uint32_t random_id(uint16_t address, uint8_t create_new)
 		#endif
 		discard_frame=true;
 		#ifdef STM32_BOARD
-			TIMER3_BASE->DIER &= ~TIMER_DIER_CC2IE;					// Disable Timer3/Comp2 interrupt
+		__TIMER3_BASE->DIER &= ~__TIMER_DIER_CC2IE;					// Disable Timer3/Comp2 interrupt
 		#else
 			CLR_TIMSK1_OCIE1B;										// Disable interrupt on compare B match
 			TX_RX_PAUSE_off;
