@@ -10,8 +10,17 @@
 #define __MODE_SELECT mode_select = 0x0F - (uint8_t)(((GPIOA->regs->IDR) >> 4) & 0x0F)
 
 #define __TIMER2_BASE TIMER2_BASE
+#define __TIMER3_BASE TIMER3_BASE
 
-#define __TIMER2_CLEAR TIMER2_BASE->SR = 0x1E5F & ~TIMER_SR_CC1IF	// Clear Timer2/Comp1 interrupt flag
+#define __TIMER_CH1 TIMER_CH1
+#define __TIMER_CH2 TIMER_CH2
+
+#define __TIMER2_CLEAR_COMP1 TIMER2_BASE->SR = 0x1E5F & ~TIMER_SR_CC1IF	// Clear Timer2/Comp1 interrupt flag
+#define __TIMER2_CLEAR_COMP2 TIMER2_BASE->SR = 0x1E5F & ~TIMER_SR_CC2IF	// Clear Timer2/Comp2 interrupt flag
+
+#define __TIMER_SR_CC1IF TIMER_SR_CC1IF
+#define __TIMER_SR_CC2IF TIMER_SR_CC2IF
+
 #define __TIMER2_CHECK_CC1IF TIMER2_BASE->SR & TIMER_SR_CC1IF
 
 #define __TELEMETRY_RX_DISABLE USART3_BASE->CR1 &= ~ USART_CR1_RE	// Disable telemetry receive

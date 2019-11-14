@@ -586,7 +586,7 @@ void loop()
 		tx_resume();
 		cli();										// Disable global int due to RW of 16 bits registers
 		OCR1A+=next_callback;						// Calc when next_callback should happen
-		__TIMER2_CLEAR;								// Clear timer flags
+		__TIMER2_CLEAR_COMP1;						// Clear timer flags
 		diff=OCR1A-TCNT1;							// Calc the time difference
 		sei();										// Enable global int
 		if((diff&0x8000) && !(next_callback&0x8000))
@@ -1447,7 +1447,7 @@ static void protocol_init()
 	}
 	cli();										// disable global int
 	OCR1A = TCNT1 + next_callback*2;			// set compare A for callback
-	__TIMER2_CLEAR;
+	__TIMER2_CLEAR_COMP1;
 	sei();										// enable global int
 	BIND_BUTTON_FLAG_off;						// do not bind/reset id anymore even if protocol change
 }
@@ -1851,22 +1851,22 @@ void modules_reset()
 	void init_HWTimer()
 	{	
 		HWTimer2.pause();									// Pause the timer2 while we're configuring it
-		TIMER2_BASE->PSC = 35;								// 36-1;for 72 MHZ /0.5sec/(35+1)
-		TIMER2_BASE->ARR = 0xFFFF;							// Count until 0xFFFF
-		HWTimer2.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);	// Main scheduler
-		TIMER2_BASE->SR = 0x1E5F & ~TIMER_SR_CC2IF;			// Clear Timer2/Comp2 interrupt flag
-		TIMER2_BASE->DIER &= ~TIMER_DIER_CC2IE;				// Disable Timer2/Comp2 interrupt
+		__TIMER2_BASE->PSC = 35;								// 36-1;for 72 MHZ /0.5sec/(35+1)
+		__TIMER2_BASE->ARR = 0xFFFF;							// Count until 0xFFFF
+		HWTimer2.setMode(__TIMER_CH1, TIMER_OUTPUT_COMPARE);	// Main scheduler
+		__TIMER2_BASE->SR = 0x1E5F & ~__TIMER_SR_CC2IF;			// Clear Timer2/Comp2 interrupt flag
+		__TIMER2_BASE->DIER &= ~TIMER_DIER_CC2IE;				// Disable Timer2/Comp2 interrupt
 		HWTimer2.refresh();									// Refresh the timer's count, prescale, and overflow
 		HWTimer2.resume();
 
 		#ifdef ENABLE_SERIAL
 			HWTimer3.pause();									// Pause the timer3 while we're configuring it
-			TIMER3_BASE->PSC = 35;								// 36-1;for 72 MHZ /0.5sec/(35+1)
-			TIMER3_BASE->ARR = 0xFFFF;							// Count until 0xFFFF
-			HWTimer3.setMode(TIMER_CH2, TIMER_OUTPUT_COMPARE);	// Serial check
-			TIMER3_BASE->SR = 0x1E5F & ~TIMER_SR_CC2IF;			// Clear Timer3/Comp2 interrupt flag
-			HWTimer3.attachInterrupt(TIMER_CH2,ISR_COMPB);		// Assign function to Timer3/Comp2 interrupt
-			TIMER3_BASE->DIER &= ~TIMER_DIER_CC2IE;				// Disable Timer3/Comp2 interrupt
+			__TIMER3_BASE->PSC = 35;								// 36-1;for 72 MHZ /0.5sec/(35+1)
+			__TIMER3_BASE->ARR = 0xFFFF;							// Count until 0xFFFF
+			HWTimer3.setMode(__TIMER_CH2, TIMER_OUTPUT_COMPARE);	// Serial check
+			__TIMER3_BASE->SR = 0x1E5F & ~TIMER_SR_CC2IF;			// Clear Timer3/Comp2 interrupt flag
+			HWTimer3.attachInterrupt(__TIMER_CH2,ISR_COMPB);		// Assign function to Timer3/Comp2 interrupt
+			__TIMER3_BASE->DIER &= ~TIMER_DIER_CC2IE;				// Disable Timer3/Comp2 interrupt
 			HWTimer3.refresh();									// Refresh the timer's count, prescale, and overflow
 			HWTimer3.resume();
 		#endif
