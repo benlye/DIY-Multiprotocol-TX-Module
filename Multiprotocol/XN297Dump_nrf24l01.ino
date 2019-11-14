@@ -167,10 +167,10 @@ static boolean __attribute__((unused)) XN297Dump_process_packet(void)
 
 static void __attribute__((unused)) XN297Dump_overflow()
 {
-	if(TIMER2_BASE->SR & TIMER_SR_UIF)
+	if(__TIMER2_BASE->SR & __TIMER_SR_UIF)
 	{ // timer overflow
 		timeH++;
-		TIMER2_BASE->SR = 0x1E5F & ~TIMER_SR_UIF;	// Clear Timer2 overflow flag
+		__TIMER2_BASE->SR = 0x1E5F & ~__TIMER_SR_UIF;	// Clear Timer2 overflow flag
 	}
 }
 static uint16_t XN297Dump_callback()
@@ -214,7 +214,7 @@ static uint16_t XN297Dump_callback()
 				NRF24L01_ReadPayload(packet,XN297DUMP_MAX_PACKET_LEN);
 				XN297Dump_overflow();
 				uint16_t timeL=TCNT1;
-				if(TIMER2_BASE->SR & TIMER_SR_UIF)
+				if(__TIMER2_BASE->SR & __TIMER_SR_UIF)
 				{//timer just rolled over...
 					XN297Dump_overflow();
 					timeL=0;
