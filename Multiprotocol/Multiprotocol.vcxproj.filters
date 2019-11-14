@@ -19,7 +19,6 @@
     <None Include="A7105_SPI.ino" />
     <None Include="AFHDS2A_a7105.ino" />
     <None Include="AFHDS2A_Rx_a7105.ino" />
-    <None Include="Arduino.ino" />
     <None Include="ASSAN_nrf24l01.ino" />
     <None Include="Bayang_nrf24l01.ino" />
     <None Include="Binary_Signature.ino" />
@@ -84,6 +83,7 @@
     <None Include="XN297L_EMU.ino" />
     <None Include="YD717_nrf24l01.ino" />
     <None Include="ZSX_nrf24l01.ino" />
+    <None Include="Arduino.ino" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.Multiprotocol.vsarduino.h">
@@ -137,5 +137,8 @@
     <ClInclude Include="board_avr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="board.txt" />
   </ItemGroup>
 </Project>

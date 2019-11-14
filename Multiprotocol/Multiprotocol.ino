@@ -61,6 +61,12 @@
 	}
 #endif
 
+#ifdef CHECK_FOR_BOOTLOADER
+void Mprotocol_serial_init(uint8_t boot);
+#else
+void Mprotocol_serial_init();
+#endif
+
 //Global constants/variables
 uint32_t MProtocol_id;//tx id,
 uint32_t MProtocol_id_master;
@@ -310,6 +316,7 @@ void setup()
 		pinMode(RX_INV_pin,OUTPUT);
 		#if defined TELEMETRY
 			#if defined INVERT_SERIAL
+				debugln("Enabling serial invesion");
 				TX_INV_on;	//activate inverter for both serial TX and RX signals
 				RX_INV_on;
 			#else
@@ -327,7 +334,9 @@ void setup()
 		pinMode(PB0, INPUT_ANALOG); // set up pin for analog input
 
 		//Timers
+		debugln("Starting the timer");
 		init_HWTimer();			//0.5us
+		debugln("Timer is running");
 	#else
 		//ATMEGA328p
 		// all inputs

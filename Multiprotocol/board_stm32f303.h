@@ -9,8 +9,8 @@
 #define __TIMER2_BASE TIM2
 #define __TIMER3_BASE TIM3
 
-#define __TIMER_CH1 TIM_CHANNEL_1
-#define __TIMER_CH2 TIM_CHANNEL_2
+#define __TIMER_CH1 1
+#define __TIMER_CH2 2
 
 #define __TIMER2_CLEAR_COMP1 TIM2->SR = 0x1E5F & ~TIM_SR_CC1IF			// Clear Timer2/Comp1 interrupt flag
 #define __TIMER2_CLEAR_COMP2 TIM2->SR = 0x1E5F & ~TIM_SR_CC2IF			// Clear Timer2/Comp2 interrupt flag
@@ -63,6 +63,8 @@
 #define __SPI2_BASE SPI2
 #define __SPI_8BIT SPI_DATASIZE_8BIT
 #define __SPI_CLK_DIV_8 SPI_CLOCK_DIV8
+
+SPI_HandleTypeDef SPI_2 = { .Instance = SPI2 };
 
 #define __SPI_BEGIN SPI.begin(2)
 #define __SPI_END SPI.end()
