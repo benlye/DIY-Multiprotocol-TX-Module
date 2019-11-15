@@ -64,10 +64,10 @@
 #define __SPI_8BIT SPI_DATASIZE_8BIT
 #define __SPI_CLK_DIV_8 SPI_CLOCK_DIV8
 
-SPI_HandleTypeDef SPI_2 = { .Instance = SPI2 };
+SPIClass SPI_2(SDI_pin, SDO_pin, SCK_pin); 								//Create an instance of the SPI Class called SPI_2 that uses the 2nd SPI Port
 
-#define __SPI_BEGIN SPI.begin(2)
-#define __SPI_END SPI.end()
+#define __SPI_BEGIN SPI_2.begin()
+#define __SPI_END SPI_2.end()
 
 void usart2_begin(uint32_t baud, uint32_t config)
 {

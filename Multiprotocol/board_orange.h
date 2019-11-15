@@ -35,7 +35,6 @@
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
 #endif
 
-
 void init()
 {
 	// this needs to be called before setup() or some functions won't
@@ -92,6 +91,25 @@ void init()
 	PORTA.PIN5CTRL = 0x18 ;
 	PORTA.PIN6CTRL = 0x18 ;
 	PORTA.PIN7CTRL = 0x18 ;
+}
+
+/* Important notes:
+	- Max value is 16000µs
+	- delay is not accurate due to interrupts happening */
+void delayMicroseconds(unsigned int us)
+{
+	if (--us == 0)
+		return;
+	us <<= 2;	// * 4
+	us -= 2;		// - 2
+	__asm__ __volatile__(
+		"1: sbiw %0,1" "\n\t" // 2 cycles
+		"nop \n"
+		"nop \n"
+		"nop \n"
+		"nop \n"
+		"brne 1b" : "=w" (us) : "0" (us) // 2 cycles
+	);
 }
 
 #define __TELEMETRY_RX_HAS_DATA USARTC0.STATUS & USART_RXCIF_bm

@@ -7,5 +7,26 @@
 
 #define __TELEMETRY_RX_HAS_DATA UCSR0A & ( 1 << RXC0 )
 
+/* Important notes:
+	- Max value is 16000µs
+	- delay is not accurate due to interrupts happening */
+void delayMicroseconds(unsigned int us)
+{
+	if (--us == 0)
+		return;
+	us <<= 2;	// * 4
+	us -= 2;		// - 2
+	__asm__ __volatile__(
+		"1: sbiw %0,1" "\n\t" // 2 cycles
+		"brne 1b" : "=w" (us) : "0" (us) // 2 cycles
+	);
+}
+
+void init()
+{
+	// this needs to be called before setup() or some functions won't work there
+	sei();
+}
+
 #endif // BOARD_ATMEGA328P
 #endif // !BOARD_ATMEGA328P_H
