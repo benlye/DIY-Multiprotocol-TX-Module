@@ -7,6 +7,9 @@
 
 #define __TELEMETRY_RX_HAS_DATA UCSR0A & ( 1 << RXC0 )
 
+#define __USART2_RX_INTERRUPT_ENABLE UCSR0B |= _BV(RXCIE0)
+#define __USART2_RX_INTERRUPT_DISABLE UCSR0B &= ~_BV(RXCIE0)
+
 /* Important notes:
 	- Max value is 16000µs
 	- delay is not accurate due to interrupts happening */

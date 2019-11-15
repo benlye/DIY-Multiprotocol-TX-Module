@@ -7,7 +7,7 @@
 
 #define __DISABLE_DEBUG_PORT afio_cfg_debug_ports(AFIO_DEBUG_NONE)
 
-#define __MODE_SELECT mode_select = 0x0F - (uint8_t)(((GPIOA->regs->IDR) >> 4) & 0x0F)
+#define __MODE_SELECT 0x0F - (uint8_t)(((GPIOA->regs->IDR) >> 4) & 0x0F)
 
 #define __TIMER2_BASE TIMER2_BASE
 #define __TIMER3_BASE TIMER3_BASE

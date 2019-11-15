@@ -416,7 +416,7 @@ void setup()
 	#ifndef ENABLE_PPM
 		mode_select = MODE_SERIAL ;	// force serial mode
 	#elif defined STM32_BOARD
-		__MODE_SELECT;
+	mode_select = __MODE_SELECT;
 	#else
 		mode_select =
 			((PROTO_DIAL1_ipr & _BV(PROTO_DIAL1_pin)) ? 0 : 1) + 
@@ -912,7 +912,7 @@ inline void tx_pause()
 			USARTC0.CTRLA &= ~0x03 ;
 		#else
 			#ifndef BASH_SERIAL
-				__TELEMETRY_TX_INTERUPT_DISABLE;
+				__USART3_TX_INTERUPT_DISABLE;
 			#endif
 		#endif
 	#endif
@@ -930,7 +930,7 @@ inline void tx_resume()
 				sei() ;
 			#else
 				#ifndef BASH_SERIAL
-					__TELEMETRY_TX_INTERUPT_ENABLE;
+					__USART3_TX_INTERUPT_ENABLE;
 				#else
 					resumeBashSerial();
 				#endif
@@ -1724,7 +1724,7 @@ void update_serial_data()
 	#ifdef ORANGE_TX
 		cli();
 	#else
-		UCSR0B &= ~_BV(RXCIE0);					// RX interrupt disable
+		__USART2_RX_INTERRUPT_DISABLE;					// RX interrupt disable
 	#endif
 	if(IS_RX_MISSED_BUFF_on)					// If the buffer is still valid
 	{	
@@ -1739,7 +1739,7 @@ void update_serial_data()
 	#ifdef ORANGE_TX
 		sei();
 	#else
-		UCSR0B |= _BV(RXCIE0) ;					// RX interrupt enable
+		__USART2_RX_INTERRUPT_ENABLE;					// RX interrupt enable
 	#endif
 }
 
@@ -1799,7 +1799,7 @@ void modules_reset()
 			if ( boot )
 			{
 				usart2_begin(57600, __SERIAL_8N1);
-				__TELEMETRY_RX_INTERRUPT_DISABLE;
+				__USART2_RX_INTERRUPT_DISABLE;
 				(void)UDR0 ;
 			}
 			else
