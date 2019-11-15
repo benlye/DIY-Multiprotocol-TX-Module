@@ -988,7 +988,7 @@ void TelemetryUpdate()
 				#else
 					#ifdef STM32_BOARD
 						usart3_begin(9600, __SERIAL_8N1);		//USART3 
-						__USART3_RX_DISABLE;
+						__SERIAL_RX_DISABLE;
 					#else
 						UBRR0H = 0x00;
 						UBRR0L = 0x67;
@@ -1009,7 +1009,7 @@ void TelemetryUpdate()
 				#else
 					#ifdef STM32_BOARD
 						usart3_begin(57600, __SERIAL_8N1);		//USART3 
-						__USART3_RX_DISABLE;
+						__SERIAL_RX_DISABLE;
 					#else
 						UBRR0H = 0x00;
 						UBRR0L = 0x22;
@@ -1030,7 +1030,7 @@ void TelemetryUpdate()
 				#else
 					#ifdef STM32_BOARD
 						usart3_begin(125000, __SERIAL_8N1);	//USART3 
-						__USART3_RX_DISABLE;
+						__SERIAL_RX_DISABLE;
 					#else
 						UBRR0H = 0x00;
 						UBRR0L = 0x07;

@@ -912,7 +912,7 @@ inline void tx_pause()
 			USARTC0.CTRLA &= ~0x03 ;
 		#else
 			#ifndef BASH_SERIAL
-				__USART3_TX_INTERUPT_DISABLE;
+				__SERIAL_TX_INTERUPT_DISABLE;
 			#endif
 		#endif
 	#endif
@@ -930,7 +930,7 @@ inline void tx_resume()
 				sei() ;
 			#else
 				#ifndef BASH_SERIAL
-					__USART3_TX_INTERUPT_ENABLE;
+					__SERIAL_TX_INTERUPT_ENABLE;
 				#else
 					resumeBashSerial();
 				#endif
@@ -1724,7 +1724,7 @@ void update_serial_data()
 	#ifdef ORANGE_TX
 		cli();
 	#else
-		__USART2_RX_INTERRUPT_DISABLE;					// RX interrupt disable
+		__SERIAL_RX_INTERRUPT_DISABLE;					// RX interrupt disable
 	#endif
 	if(IS_RX_MISSED_BUFF_on)					// If the buffer is still valid
 	{	
@@ -1739,7 +1739,7 @@ void update_serial_data()
 	#ifdef ORANGE_TX
 		sei();
 	#else
-		__USART2_RX_INTERRUPT_ENABLE;					// RX interrupt enable
+		__SERIAL_RX_INTERRUPT_ENABLE;					// RX interrupt enable
 	#endif
 }
 
@@ -1799,7 +1799,7 @@ void modules_reset()
 			if ( boot )
 			{
 				usart2_begin(57600, __SERIAL_8N1);
-				__USART2_RX_INTERRUPT_DISABLE;
+				__SERIAL_RX_INTERRUPT_DISABLE;
 				(void)UDR0 ;
 			}
 			else
@@ -1809,8 +1809,8 @@ void modules_reset()
 			UCSR0B |= __USART_CR1_PCE;
 		}
 		usart3_begin(100000, __SERIAL_8E2);
-		__USART3_RX_DISABLE;		//disable receive
-		__USART2_TX_DISABLE;		//disable transmit
+		__SERIAL_RX_DISABLE;		//disable receive
+		__SERIAL_TX_DISABLE;		//disable transmit
 	#else
 		//ATMEGA328p
 		#include <util/setbaud.h>	

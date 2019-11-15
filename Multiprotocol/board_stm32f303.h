@@ -37,14 +37,14 @@
 //******************
 
 // Enable/disable serial transmit/receive
-#define __USART2_TX_DISABLE USART2->CR1 &= ~USART_CR1_TE					// Disable USART2 serial transmit
-#define __USART3_RX_DISABLE USART3->CR1 &= ~USART_CR1_RE					// Disable USART3 serial receive
+#define __SERIAL_TX_DISABLE USART2->CR1 &= ~USART_CR1_TE					// Disable USART2 serial transmit
+#define __SERIAL_RX_DISABLE USART3->CR1 &= ~USART_CR1_RE					// Disable USART3 serial receive
 
 // Enable/disable serial interrupts
-#define __USART2_RX_INTERRUPT_ENABLE USART2->CR1 |= USART_CR1_RXNEIE		// Enable USART2 receive interrupts
-#define __USART2_RX_INTERRUPT_DISABLE USART2->CR1 &= ~USART_CR1_RXNEIE		// Disable USART2 receive interrupts
-#define __USART3_TX_INTERUPT_ENABLE USART3->CR1 |= USART_CR1_TXEIE			// Enable USART3 transmit interrupts
-#define __USART3_TX_INTERUPT_DISABLE USART3->CR1 &= ~USART_CR1_TXEIE		// Disable USART3 transmit interrupts
+#define __SERIAL_RX_INTERRUPT_ENABLE USART2->CR1 |= USART_CR1_RXNEIE		// Enable USART2 receive interrupts
+#define __SERIAL_RX_INTERRUPT_DISABLE USART2->CR1 &= ~USART_CR1_RXNEIE		// Disable USART2 receive interrupts
+#define __SERIAL_TX_INTERUPT_ENABLE USART3->CR1 |= USART_CR1_TXEIE			// Enable USART3 transmit interrupts
+#define __SERIAL_TX_INTERUPT_DISABLE USART3->CR1 &= ~USART_CR1_TXEIE		// Disable USART3 transmit interrupts
 
 
 #define UDR0 USART2->RDR
