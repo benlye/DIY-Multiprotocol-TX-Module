@@ -482,7 +482,7 @@ void XN297_WriteEnhancedPayload(uint8_t* msg, uint8_t len, uint8_t noack)
 		pid=0;
 }
 
-boolean XN297_ReadPayload(uint8_t* msg, uint8_t len)
+bool XN297_ReadPayload(uint8_t* msg, uint8_t len)
 { //!!! Don't forget if using CRC to do a +2 on any of the used NRF24L01_11_RX_PW_Px !!!
 	uint8_t buf[32];
 	if (xn297_crc)

@@ -68,7 +68,7 @@ static void __attribute__((unused)) NCC_Crypt_Packet()
 	packet[NCC_TX_PACKET_LEN-2]=crc>>8;
 	packet[NCC_TX_PACKET_LEN-1]=crc;
 }
-static boolean __attribute__((unused)) NCC_Decrypt_Packet()
+static bool __attribute__((unused)) NCC_Decrypt_Packet()
 {
 	uint16_t crc=0;
 	debug("RX: ");

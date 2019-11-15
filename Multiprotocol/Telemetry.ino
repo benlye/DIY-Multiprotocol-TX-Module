@@ -41,7 +41,7 @@ uint8_t RetrySequence ;
 	uint8_t FrSkyX_RX_ValidSeq ;
 	struct t_FrSkyX_RX_Frame
 	{
-		boolean valid;
+		bool valid;
 		uint8_t count;
 		uint8_t payload[6];
 	} ;

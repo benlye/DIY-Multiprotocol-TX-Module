@@ -32,7 +32,7 @@
 
 uint8_t address_length;
 uint16_t timeH=0;
-boolean scramble;
+bool scramble;
 
 static void __attribute__((unused)) XN297Dump_init()
 {
@@ -72,7 +72,7 @@ static void __attribute__((unused)) XN297Dump_init()
 	NRF24L01_SetPower();
 }
 
-static boolean __attribute__((unused)) XN297Dump_process_packet(void)
+static bool __attribute__((unused)) XN297Dump_process_packet(void)
 {
 	uint16_t crcxored;
 	uint8_t packet_sc[XN297DUMP_MAX_PACKET_LEN], packet_un[XN297DUMP_MAX_PACKET_LEN];

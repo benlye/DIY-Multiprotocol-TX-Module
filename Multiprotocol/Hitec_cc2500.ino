@@ -118,7 +118,7 @@ static void __attribute__((unused)) HITEC_change_chan_fast()
 
 static void __attribute__((unused)) HITEC_build_packet()
 {
-	static boolean F5_frame=false;
+	static bool F5_frame=false;
 	static uint8_t F5_counter=0;
 	uint8_t offset;
 	
@@ -301,7 +301,7 @@ uint16_t ReadHITEC()
 						if(len==13)	// Bind packets have a length of 13
 						{ // bind packet: 0A,00,E5,F2,7X,05,06,07,08,09,00
 							debug(",bind");
-							boolean check=true;
+							bool check=true;
 							for(uint8_t i=5;i<=10;i++)
 								if(packet_in[i]!=i%10) check=false;
 							if((packet_in[4]&0xF0)==0x70 && check)
