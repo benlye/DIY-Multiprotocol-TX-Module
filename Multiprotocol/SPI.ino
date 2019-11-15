@@ -24,9 +24,9 @@
 void initSPI2()
 {
 	//SPI_DISABLE();
-	//__SPI_END;
+	SPI_2.end();
 	__SPI2_BASE->CR1 &= ~__SPI_8BIT;		//8 bits format, this bit should be written only when SPI is disabled (SPE = ?0?) for correct operation.
-	__SPI_BEGIN;							//Initialize the SPI_2 port.
+	SPI_2.begin();							//Initialize the SPI_2 port.
 
 	__SPI2_BASE->CR1 &= ~SPI_CR1_LSBFIRST;		// Set the SPI_2 bit order MSB first
 	__SPI2_BASE->CR1 &= ~(SPI_CR1_CPOL|SPI_CR1_CPHA);	// Set the SPI_2 data mode 0: Clock idles low, data captured on rising edge (first transition)
