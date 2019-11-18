@@ -1,5 +1,5 @@
 #ifndef BOARD_AVR_H
-#define BOARD_STM3BOARD_AVR_H2_H
+#define BOARD_AVR_H
 #ifdef AVR_BOARD
 
 //*******************
