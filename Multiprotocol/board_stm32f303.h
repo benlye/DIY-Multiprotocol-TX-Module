@@ -1,3 +1,16 @@
+/*
+ This project is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ Multiprotocol is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ You should have received a copy of the GNU General Public License
+ along with Multiprotocol.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef BOARD_STM32F303_H
 #define BOARD_STM32F303_H
 #ifdef BOARD_STM32F303
@@ -27,14 +40,24 @@
 #define __TIMER_DIER_CC2IE TIM_DIER_CC2IE									// Capture/compare 2 interrupt enable flag
 #define __TIMER_SR_UIF TIM_SR_UIF											// Update interrupt flag
 
-#define OCR1A TIM2->CCR1
-#define TCNT1 TIM2->CNT
-#define TIFR1 TIM2->SR
-#define OCF1A_bm TIMER_SR_CC1IF
+#define OCR1A TIM2->CCR1													// Timer 2 configuration register 1
+#define TCNT1 TIM2->CNT														// Timer 2 counter
+#define TIFR1 TIM2->SR														// Timer 2 status register
+
+// #define OCF1A_bm TIM_SR_CC1IF											// Capture/compare 1 interrupt flag - NOT USED
+
 
 //******************
 //***   Serial   ***
 //******************
+
+// Registers
+#define UDR0 USART2->RDR													// USART2 receive data register
+#define __USART3_DR USART3->RDR												// USART3 receive data register
+#define __USART2_SR USART2->ISR												// USART2 status register
+#define __USART3_SR USART3->ISR												// USART3 status register
+
+#define UCSR0B USART2->CR1													// USART2 config register
 
 // Enable/disable serial transmit/receive
 #define __SERIAL_TX_DISABLE USART2->CR1 &= ~USART_CR1_TE					// Disable USART2 serial transmit
@@ -46,22 +69,13 @@
 #define __SERIAL_TX_INTERUPT_ENABLE USART3->CR1 |= USART_CR1_TXEIE			// Enable USART3 transmit interrupts
 #define __SERIAL_TX_INTERUPT_DISABLE USART3->CR1 &= ~USART_CR1_TXEIE		// Disable USART3 transmit interrupts
 
+// Flags
+#define RXCIE0 USART_CR1_RXNEIE												// Serial receive interrupt enable flag
+#define TXCIE0 USART_CR1_TXEIE												// Serial transmit interrupt enable flag
 
-#define UDR0 USART2->RDR
-#define UCSR0B USART2->CR1
-#define RXCIE0 USART_CR1_RXNEIE
-#define TXCIE0 USART_CR1_TXEIE
-
-#define __USART2_SR USART2->ISR
-#define __USART3_SR USART3->ISR
-
-#define __USART3_DR USART3->RDR
-
-#define __USART_SR_TXE USART_ISR_TXE
-
-#define __USART_CR1_PCE USART_CR1_PCE
-
-#define __TELEMETRY_RX_HAS_DATA USART2->ISR & USART_ISR_RXNE
+#define __USART_SR_TXE USART_ISR_TXE										// Serial transmit data register empty flag
+#define __USART_CR1_PCE USART_CR1_PCE										// Serial parity enable flag
+#define __TELEMETRY_RX_HAS_DATA USART2->ISR & USART_ISR_RXNE				// Check USART2 data register not empty flag
 
 
 //******************
@@ -80,7 +94,7 @@ SPIClass SPI_2(SDI_pin, SDO_pin, SCK_pin); 									// Create an instance of the
 #define __MODE_SELECT 0x0F - (uint8_t)(((GPIOA->IDR) >> 4) & 0x0F)			// Read the 16-pos rotary selector
 #define __NVIC_SYS_RESET HAL_NVIC_SystemReset								// Reset the MCU
 
-
+// Configures and enables USART2 for serial RX
 void usart2_begin(uint32_t baud, uint32_t config)
 {
 	__HAL_RCC_USART2_CLK_ENABLE();
@@ -97,21 +111,23 @@ void usart2_begin(uint32_t baud, uint32_t config)
 
 	LED2_output;
 
-	// Set the baud rates and configure the ports
+	// Set the baud rate
 	USART2->BRR = 36000000 / baud;
-	USART2->CR1 |= USART_CR1_UE;	// USART Enable
-	USART2->CR1 |= USART_CR1_RE;	// Receiver Enable
-	USART2->CR1 |= USART_CR1_TE;	// Transmitter Enable
 	USART2->CR2 = 0;
 	USART2->CR3 = 0;
 
-	USART2->CR1 = (USART3->CR1 & 0B1110000111111111) | ((uint32_t)(config & 0x0F) << 9);
-	USART2->CR2 = (USART3->CR2 & 0B1100111111111111) | ((uint32_t)(config & 0x30) << 8);
+	// Configure parity
+	USART2->CR1 = (USART2->CR1 & 0B1110000111111111) | ((uint32_t)(config & 0x0F) << 9);
+	USART2->CR2 = (USART2->CR2 & 0B1100111111111111) | ((uint32_t)(config & 0x30) << 8);
 
+	// Enable transmit, receive, receive interrupts
 	USART2->CR1 |= (USART_CR1_TE | USART_CR1_RE | USART_CR1_RXNEIE);
+
+	// Enable the USART
 	USART2->CR1 |= USART_CR1_UE;
 }
 
+// Configures and enables USART3 for serial TX
 void usart3_begin(uint32_t baud, uint32_t config)
 {
 	__HAL_RCC_USART3_CLK_ENABLE();
@@ -126,17 +142,19 @@ void usart3_begin(uint32_t baud, uint32_t config)
 	GPIO_InitStruct.Alternate = GPIO_AF7_USART3;
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+	// Set the baud rate
 	USART3->BRR = 36000000 / baud;
-	USART3->CR1 |= USART_CR1_UE;	// USART Enable
-	USART3->CR1 |= USART_CR1_RE;	// Receiver Enable
-	USART3->CR1 |= USART_CR1_TE;	// Transmitter Enable
 	USART3->CR2 = 0;
 	USART3->CR3 = 0;
 
+	// Configure parity
 	USART3->CR1 = (USART3->CR1 & 0B1110000111111111) | ((uint32_t)(config & 0x0F) << 9);
 	USART3->CR2 = (USART3->CR2 & 0B1100111111111111) | ((uint32_t)(config & 0x30) << 8);
 	
+	// Enable transmit, receive, receive interrupts
 	USART3->CR1 |= (USART_CR1_TE | USART_CR1_RE | USART_CR1_RXNEIE);
+
+	// Enable the USART
 	USART3->CR1 |= USART_CR1_UE;
 }
 

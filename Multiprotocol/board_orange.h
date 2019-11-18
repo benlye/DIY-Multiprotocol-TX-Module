@@ -1,10 +1,19 @@
+/*
+ This project is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ Multiprotocol is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ You should have received a copy of the GNU General Public License
+ along with Multiprotocol.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef BOARD_ORANGE_H
 #define BOARD_ORANGE_H
 #ifdef BOARD_ORANGE
-
-//#define ARDUINO_AVR_PRO		1
-
-#define ORANGE_TX	1
 
 #include <stdlib.h>
 #include <string.h>
