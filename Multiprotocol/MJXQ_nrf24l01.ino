@@ -327,7 +327,12 @@ static void __attribute__((unused)) MJXQ_initialize_txid()
 uint16_t MJXQ_callback()
 {
 	if(IS_BIND_DONE)
+	{
+		#ifdef MULTI_SYNC
+			telemetry_set_input_sync(MJXQ_PACKET_PERIOD);
+		#endif
 		MJXQ_send_packet(0);
+	}
 	else
 	{
 		if (bind_counter == 0)

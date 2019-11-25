@@ -111,7 +111,12 @@ static void __attribute__((unused)) V911S_initialize_txid()
 uint16_t V911S_callback()
 {
 	if(IS_BIND_DONE)
+	{
+		#ifdef MULTI_SYNC
+			telemetry_set_input_sync(V911S_PACKET_PERIOD);
+		#endif
 		V911S_send_packet(0);
+	}
 	else
 	{
 		if (bind_counter == 0)

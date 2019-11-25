@@ -222,7 +222,12 @@ static void __attribute__((unused)) MT99XX_initialize_txid()
 uint16_t MT99XX_callback()
 {
 	if(IS_BIND_DONE)
+	{
+		#ifdef MULTI_SYNC
+			telemetry_set_input_sync(packet_period);
+		#endif
 		MT99XX_send_packet();
+	}
 	else
 	{
 		if (bind_counter == 0)

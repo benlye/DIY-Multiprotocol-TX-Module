@@ -201,7 +201,10 @@ uint16_t ReadJ6Pro()
             cyrf_datainit();
             phase = J6PRO_CHAN_1;
         case J6PRO_CHAN_1:
-            //Keep transmit power updated
+			#ifdef MULTI_SYNC
+                telemetry_set_input_sync(24550);
+			#endif
+			//Keep transmit power updated
             CYRF_SetPower(0x28);
             j6pro_build_data_packet();
             //return 3400;

@@ -151,7 +151,12 @@ uint8_t ESKY150_convert_2bit_channel(uint8_t num)
 uint16_t ESKY150_callback()
 {
 	if(IS_BIND_DONE)
+	{
+		#ifdef MULTI_SYNC
+			telemetry_set_input_sync(ESKY150_SENDING_PACKET_PERIOD);
+		#endif
 		ESKY150_send_packet();
+	}
 	else
 	{
 		NRF24L01_WritePayload(packet, ESKY150_PAYLOADSIZE);

@@ -90,14 +90,14 @@ static void AFHDS2A_update_telemetry()
 	#ifdef AFHDS2A_FW_TELEMETRY
 		if (option & 0x80)
 		{// forward 0xAA and 0xAC telemetry to TX, skip rx and tx id to save space
-			pkt[0]= TX_RSSI;
+			packet_in[0]= TX_RSSI;
 			debug("T(%02X)=",packet[0]);
 			for(uint8_t i=9;i < AFHDS2A_RXPACKET_SIZE; i++)
 			{
-				pkt[i-8]=packet[i];
+				packet_in[i-8]=packet[i];
 				debug(" %02X",packet[i]);
 			}
-			pkt[29]=packet[0];	// 0xAA Normal telemetry, 0xAC Extended telemetry
+			packet_in[29]=packet[0];	// 0xAA Normal telemetry, 0xAC Extended telemetry
 			telemetry_link=2;
 			debugln("");
 			return;
@@ -122,7 +122,8 @@ static void AFHDS2A_update_telemetry()
 						telemetry_link=1;
 						break;
 					case AFHDS2A_SENSOR_RX_ERR_RATE:
-						RX_LQI=packet[index+2];
+						if(packet[index+2]<=100)
+							RX_LQI=packet[index+2];
 						break;
 					case AFHDS2A_SENSOR_RX_RSSI:
 						RX_RSSI = -packet[index+2];
@@ -264,11 +265,15 @@ uint16_t ReadAFHDS2A()
 				A7105_ReadData(AFHDS2A_RXPACKET_SIZE);
 				if(packet[0] == 0xbc && packet[9] == 0x01)
 				{
-					uint8_t temp=AFHDS2A_EEPROM_OFFSET+RX_num*4;
+					uint8_t addr;
+					if(RX_num<16)
+						addr=AFHDS2A_EEPROM_OFFSET+RX_num*4;
+					else
+						addr=AFHDS2A_EEPROM_OFFSET2+(RX_num-16)*4;
 					for(uint8_t i=0; i<4; i++)
 					{
 						rx_id[i] = packet[5+i];
-						eeprom_write_byte((EE_ADDR)(temp+i),rx_id[i]);
+						eeprom_write_byte((EE_ADDR)(addr+i),rx_id[i]);
 					}
 					phase = AFHDS2A_BIND4;
 					packet_count++;
@@ -316,6 +321,9 @@ uint16_t ReadAFHDS2A()
 			packet_type = AFHDS2A_PACKET_STICKS;
 			phase = AFHDS2A_DATA;
 		case AFHDS2A_DATA:
+			#ifdef MULTI_SYNC
+				telemetry_set_input_sync(3850);
+			#endif
 			AFHDS2A_build_packet(packet_type);
 			if((A7105_ReadReg(A7105_00_MODE) & 0x01))		// Check if something has been received...
 				data_rx=0;
@@ -330,7 +338,10 @@ uint16_t ReadAFHDS2A()
 			{
 				#ifdef FAILSAFE_ENABLE
 					if(!(packet_counter % 1569) && IS_FAILSAFE_VALUES_on)
+					{
 						packet_type = AFHDS2A_PACKET_FAILSAFE;
+						FAILSAFE_VALUES_off;
+					}
 					else
 				#endif
 						packet_type = AFHDS2A_PACKET_STICKS;		// todo : check for settings changes
@@ -344,13 +355,19 @@ uint16_t ReadAFHDS2A()
 					if(packet[0] == 0xAA || packet[0] == 0xAC)
 					{
 						if(!memcmp(&packet[1], rx_tx_addr, 4))
-						{ // Validate TX address
+						{ // TX address validated
 							#ifdef AFHDS2A_LQI_CH
-								for(uint8_t sensor=0; sensor<7; sensor++)
-								{//read LQI value for RX output
-									uint8_t index = 9+(4*sensor);
-									if(packet[index]==AFHDS2A_SENSOR_RX_ERR_RATE)
-										RX_LQI=packet[index+2];
+								if(packet[0]==0xAA && packet[9]!=0xFD)
+								{// Normal telemetry packet
+									for(uint8_t sensor=0; sensor<7; sensor++)
+									{//read LQI value for RX output
+										uint8_t index = 9+(4*sensor);
+										if(packet[index]==AFHDS2A_SENSOR_RX_ERR_RATE && packet[index+2]<=100)
+										{
+											RX_LQI=packet[index+2];
+											break;
+										}
+									}
 								}
 							#endif
 							#if defined(AFHDS2A_FW_TELEMETRY) || defined(AFHDS2A_HUB_TELEMETRY)
@@ -390,14 +407,15 @@ uint16_t initAFHDS2A()
 	{
 		phase = AFHDS2A_DATA_INIT;
 		//Read RX ID from EEPROM based on RX_num, RX_num must be uniq for each RX
-		uint8_t temp=AFHDS2A_EEPROM_OFFSET+RX_num*4;
+		uint8_t addr;
+		if(RX_num<16)
+			addr=AFHDS2A_EEPROM_OFFSET+RX_num*4;
+		else
+			addr=AFHDS2A_EEPROM_OFFSET2+(RX_num-16)*4;
 		for(uint8_t i=0;i<4;i++)
-			rx_id[i]=eeprom_read_byte((EE_ADDR)(temp+i));
+			rx_id[i]=eeprom_read_byte((EE_ADDR)(addr+i));
 	}
 	hopping_frequency_no = 0;
-#if defined(AFHDS2A_FW_TELEMETRY) || defined(AFHDS2A_HUB_TELEMETRY)
-	init_frskyd_link_telemetry();
-#endif
 	return 50000;
 }
 #endif

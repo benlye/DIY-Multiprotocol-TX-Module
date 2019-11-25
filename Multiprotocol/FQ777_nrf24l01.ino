@@ -188,7 +188,12 @@ uint16_t FQ777_callback()
 		}
 	}
 	else
+	{
+		#ifdef MULTI_SYNC
+			telemetry_set_input_sync(FQ777_PACKET_PERIOD);
+		#endif
 		FQ777_send_packet(0);
+	}
 	return FQ777_PACKET_PERIOD;
 }
 
