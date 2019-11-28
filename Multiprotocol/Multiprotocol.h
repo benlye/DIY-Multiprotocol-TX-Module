@@ -19,7 +19,7 @@
 #define VERSION_MAJOR		1
 #define VERSION_MINOR		3
 #define VERSION_REVISION	0
-#define VERSION_PATCH_LEVEL	44
+#define VERSION_PATCH_LEVEL	46
 
 //******************
 // Protocols
@@ -84,6 +84,7 @@ enum PROTOCOLS
 	PROTO_FRSKY_RX	= 55,	// =>CC2500
 	PROTO_AFHDS2A_RX= 56,	// =>A7105
 	PROTO_HOTT		= 57,	// =>CC2500
+	PROTO_FX816		= 58,	// =>NRF24L01
 	PROTO_XN297DUMP	= 63,	// =>NRF24L01
 };
 
@@ -290,6 +291,11 @@ enum REDPINE
 enum TRAXXAS
 {
 	RX6519	= 0,
+};
+enum ESKY150
+{
+	ESKY150_4CH	= 0,
+	ESKY150_7CH	= 1,
 };
 
 #define NONE 		0
@@ -671,6 +677,7 @@ Serial: 100000 Baud 8e2      _ xxxx xxxx p --
 				FRSKY_RX	55
 				AFHDS2A_RX	56
 				HOTT		57
+				FX816		58
    BindBit=>		0x80	1=Bind/0=No
    AutoBindBit=>	0x40	1=Yes /0=No
    RangeCheck=>		0x20	1=Yes /0=No
@@ -812,6 +819,9 @@ Serial: 100000 Baud 8e2      _ xxxx xxxx p --
 			RED_SLOW	1
 		sub_protocol==TRAXXAS
 			RX6519		0
+		sub_protocol==ESKY150
+			ESKY150_4CH	0
+			ESKY150_7CH	1
 
    Power value => 0x80	0=High/1=Low
   Stream[3]   = option_protocol;

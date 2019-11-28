@@ -91,6 +91,7 @@ CFlie|38|CFlie||||||||NRF24L01|
 [FrskyV](Protocols_Details.md#FRSKYV---25)|25|FrskyV||||||||CC2500|
 [FrskyX](Protocols_Details.md#FRSKYX---15)|15|CH_16|CH_8|EU_16|EU_8|||||CC2500|
 [FrskyX_RX](Protocols_Details.md#FRSKYX_RX---55)|55|FCC|EU_LBT|||||CC2500|
+[FX816](Protocols_Details.md#FX816---58)|28|FX816|P38|||||||NRF24L01|
 [FY326](Protocols_Details.md#FY326---20)|20|FY326|FY319|||||||NRF24L01|
 [GD00X](Protocols_Details.md#GD00X---47)|47|GD_V1*|GD_V2*|||||||NRF24L01|
 [GW008](Protocols_Details.md#GW008---32)|32|GW008||||||||NRF24L01|XN297
@@ -826,13 +827,28 @@ A|E|T|R|GYRO|PITCH
 ## ESKY150 - *35*
 ESky protocol for small models since 2014 (150, 300, 150X, ...)
 
-Number of channels are set with option. option=0 4 channels and option=1 7 channels. An invalid option value will end up with 4 channels.
+### Sub_protocol 4CH - *0*
+
+CH1|CH2|CH3|CH4
+---|---|---|---
+A|E|T|R
+
+### Sub_protocol 7CH - *1*
 
 CH1|CH2|CH3|CH4|CH5|CH6|CH7
 ---|---|---|---|---|---|---
 A|E|T|R|FMODE|AUX6|AUX7
 
 FMODE and AUX7 have 4 positions: -100%..-50%=>0, -50%..5%=>1, 5%..50%=>2, 50%..100%=>3
+
+## FX816 - *58*
+Model: FEI XIONG FX816 P38
+
+Only 8 TX IDs available
+
+CH1|CH2|CH3|CH4
+---|---|---|---
+A|-|T|-
 
 ## FY326 - *20*
 
