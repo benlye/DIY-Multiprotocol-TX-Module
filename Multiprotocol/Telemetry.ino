@@ -1055,7 +1055,13 @@ void TelemetryUpdate()
 		ISR(USARTC0_DRE_vect)
 	#else
 		#ifdef STM32_BOARD
-			void __irq_usart3()			
+			#ifdef BOARD_STM32F303
+				void USART3_IRQHandler()
+			#endif	
+			#ifdef BOARD_MAPLE
+				void __irq_usart3()
+			#endif
+				
 		#else
 			ISR(USART_UDRE_vect)
 		#endif
