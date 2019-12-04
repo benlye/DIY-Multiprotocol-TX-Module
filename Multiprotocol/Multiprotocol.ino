@@ -56,14 +56,8 @@
 	void PPM_decode();
 	extern "C"
 	{
-		#ifdef BOARD_STM32F303
-		void USART2_IRQHandler(void);
-		void USART3_IRQHandler(void);
-		#endif	
-		#ifdef BOARD_MAPLE
-		void __irq_usart2(void);
-		void __irq_usart3(void);
-		#endif
+		void __USART2_IRQ_Handler(void);
+		void __USART3_IRQ_Handler(void);
 	}
 #endif
 

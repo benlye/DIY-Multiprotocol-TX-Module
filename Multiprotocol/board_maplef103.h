@@ -61,6 +61,8 @@
 #define __USART2_SR USART2_BASE->SR
 #define __USART3_SR USART3_BASE->SR
 
+#define __USART2_IRQ_Handler __irq_usart2								// Method name for USART2 interrupt handler override
+#define __USART3_IRQ_Handler __irq_usart3								// Method name for USART3 interrupt handler override
 
 #define __USART3_DR USART3_BASE->DR
 

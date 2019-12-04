@@ -77,6 +77,8 @@
 #define __USART_CR1_PCE USART_CR1_PCE										// Serial parity enable flag
 #define __TELEMETRY_RX_HAS_DATA USART2->ISR & USART_ISR_RXNE				// Check USART2 data register not empty flag
 
+#define __USART2_IRQ_Handler USART2_IRQHandler								// Method name for USART2 interrupt handler override
+#define __USART3_IRQ_Handler USART3_IRQHandler								// Method name for USART3 interrupt handler override
 
 //******************
 //***    SPI     ***
