@@ -23,8 +23,8 @@
 
 void initSPI2()
 {
-	//SPI_DISABLE();
-	SPI_2.end();
+	SPI_DISABLE();
+	// SPI_2.end();
 	__SPI2_BASE->CR1 &= ~__SPI_8BIT;		//8 bits format, this bit should be written only when SPI is disabled (SPE = ?0?) for correct operation.
 	SPI_2.begin();							//Initialize the SPI_2 port.
 
