@@ -59,6 +59,18 @@ REVISION_VERSION=$(grep "VERSION_REVISION" "$SRCPATH//Multiprotocol.h" | awk -v 
 PATCH_VERSION=$(grep "VERSION_PATCH" "$SRCPATH//Multiprotocol.h" | awk -v N=3 '{gsub(/\r/,""); print $N}')
 MULTI_VERSION=$MAJOR_VERSION.$MINOR_VERSION.$REVISION_VERSION.$PATCH_VERSION
 
+# Set up the arduino-cli environment
+which arduino-cli > /dev/null
+if [[ $? -ne 0 ]]; then
+	printf "\n\e[91marduino-cli not found\e[0m\n\n"
+	exit 1
+fi
+
+arduino-cli core install arduino:avr;
+arduino-cli core update-index --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json
+arduino-cli core install multi4in1:avr --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json;
+arduino-cli core install multi4in1:STM32F1 --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json;
+
 # Make  _Config.h file is unmodified
 git checkout $SRCPATH/_Config.h
 
