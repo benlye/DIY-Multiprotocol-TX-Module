@@ -19,7 +19,7 @@
 #define VERSION_MAJOR		1
 #define VERSION_MINOR		3
 #define VERSION_REVISION	0
-#define VERSION_PATCH_LEVEL	46
+#define VERSION_PATCH_LEVEL	52
 
 //******************
 // Protocols
@@ -85,6 +85,9 @@ enum PROTOCOLS
 	PROTO_AFHDS2A_RX= 56,	// =>A7105
 	PROTO_HOTT		= 57,	// =>CC2500
 	PROTO_FX816		= 58,	// =>NRF24L01
+	PROTO_BAYANG_RX	= 59,	// =>NRF24L01
+	PROTO_PELIKAN	= 60,	// =>A7105
+	PROTO_TIGER		= 61,	// =>NRF24L01
 	PROTO_XN297DUMP	= 63,	// =>NRF24L01
 };
 
@@ -297,6 +300,13 @@ enum ESKY150
 	ESKY150_4CH	= 0,
 	ESKY150_7CH	= 1,
 };
+enum XN297DUMP
+{
+	XN297DUMP_250K	= 0,
+	XN297DUMP_1M	= 1,
+	XN297DUMP_2M	= 2,
+	XN297DUMP_AUTO	= 3,
+};
 
 #define NONE 		0
 #define P_HIGH		1
@@ -336,6 +346,12 @@ enum MultiPacketTypes
 
 // Macros
 #define NOP() __asm__ __volatile__("nop")
+
+//***************
+//***  Tests  ***
+//***************
+#define IS_FAILSAFE_PROTOCOL	( (protocol==PROTO_HISKY && sub_protocol==HK310) || protocol==PROTO_AFHDS2A || protocol==PROTO_DEVO || protocol==PROTO_SFHSS || protocol==PROTO_WK2x01 || protocol== PROTO_HOTT || protocol==PROTO_FRSKYX )
+#define IS_CHMAP_PROTOCOL		( (protocol==PROTO_HISKY && sub_protocol==HK310) || protocol==PROTO_AFHDS2A || protocol==PROTO_DEVO || protocol==PROTO_SFHSS || protocol==PROTO_WK2x01 || protocol== PROTO_DSM || protocol==PROTO_SLT || protocol==PROTO_FLYSKY || protocol==PROTO_ESKY || protocol==PROTO_J6PRO )
 
 //***************
 //***  Flags  ***
@@ -601,7 +617,8 @@ enum {
 #define AFHDS2A_RX_EEPROM_OFFSET 230	// (4) TX ID + (16) channels, 20 bytes, end is 230+20=250
 #define AFHDS2A_EEPROM_OFFSET2	250		// RX ID, 4 bytes per model id, end is 250+192=442
 #define HOTT_EEPROM_OFFSET		442		// RX ID, 5 bytes per model id, end is 320+442=762
-//#define CONFIG_EEPROM_OFFSET 	762		// Current configuration of the multimodule
+#define BAYANG_RX_EEPROM_OFFSET	762		// (5) TX ID + (4) channels, 9 bytes, end is 771 
+//#define CONFIG_EEPROM_OFFSET 	771		// Current configuration of the multimodule
 
 //****************************************
 //*** MULTI protocol serial definition ***
@@ -678,6 +695,9 @@ Serial: 100000 Baud 8e2      _ xxxx xxxx p --
 				AFHDS2A_RX	56
 				HOTT		57
 				FX816		58
+				BAYANG_RX	59
+				PELIKAN		60
+				TIGER		61
    BindBit=>		0x80	1=Bind/0=No
    AutoBindBit=>	0x40	1=Yes /0=No
    RangeCheck=>		0x20	1=Yes /0=No

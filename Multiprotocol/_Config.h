@@ -113,6 +113,7 @@
 //#define FORCE_BUGS_TUNING		0
 //#define FORCE_FLYSKY_TUNING	0
 //#define FORCE_FLYZONE_TUNING	0
+//#define FORCE_PELIKAN_TUNING	0
 //#define FORCE_HUBSAN_TUNING	0
 
 /** CYRF6936 Fine Frequency Tuning **/
@@ -163,6 +164,7 @@
 #define	FLYSKY_A7105_INO
 #define	FLYZONE_A7105_INO
 #define	HUBSAN_A7105_INO
+#define PELIKAN_A7105_INO
 
 //The protocols below need a CYRF6936 to be installed
 #define	DEVO_CYRF6936_INO
@@ -187,6 +189,7 @@
 //The protocols below need a NRF24L01 to be installed
 #define	ASSAN_NRF24L01_INO
 #define	BAYANG_NRF24L01_INO
+#define	BAYANG_RX_NRF24L01_INO
 #define	BUGSMINI_NRF24L01_INO
 #define	CABELL_NRF24L01_INO
 #define	CFLIE_NRF24L01_INO
@@ -214,6 +217,7 @@
 #define	SHENQI_NRF24L01_INO
 #define	SLT_NRF24L01_INO
 #define	SYMAX_NRF24L01_INO
+#define	TIGER_NRF24L01_INO
 #define	V2X2_NRF24L01_INO
 #define	V761_NRF24L01_INO
 #define	V911S_NRF24L01_INO
@@ -282,8 +286,6 @@
 //Sends Multi status and allow OpenTX to autodetect the telemetry format. Comment to disable.
 //Supported by OpenTX version 2.2 RC9 and newer. NOT supported by er9x/erskyTX use MULTI_STATUS instead.
 #define MULTI_TELEMETRY
-//Send to OpenTX the current protocol and subprotocol names. Comment to disable.
-#define MULTI_NAMES
 //Work in progress: Sync OpenTX frames with the current protocol timing. This feature is only available on the STM32 module. Uncomment to enable.
 //#define MULTI_SYNC
 
@@ -304,6 +306,7 @@
 #define FRSKY_RX_TELEMETRY			// Forward channels data to TX
 #define AFHDS2A_RX_TELEMETRY		// Forward channels data to TX
 #define HOTT_FW_TELEMETRY			// Forward received telemetry packets to be decoded by erskyTX and OpenTX
+#define BAYANG_RX_TELEMETRY			// Forward channels data to TX
 
 /****************************/
 /*** SERIAL MODE SETTINGS ***/
@@ -485,6 +488,33 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 //  - 0x40010000 will give to the protocol the channels in the order 4,2,3,1,5,6,7,8 swapping channel 1 and 4. Note: 0 means leave the channel where it is.
 //  - 0x0000ABCD will give to the protocol the channels in the order 1,2,3,4,10,11,12,13 which potentially enables acces to channels not available on your TX. Note A=10,B=11,C=12,D=13,E=14,F=15.
 
+
+/**********************************/
+/*** DIRECT INPUTS SETTINGS ***/
+/**********************************/
+//In this section you can configure the direct inputs.
+//It enables switches wired directly to the board
+//Direct inputs works only in ppm mode and only for stm_32 boards
+//Uncomment following lines to enable derect inputs or define your own configuration in _MyConfig.h
+/*
+#define ENABLE_DIRECT_INPUTS
+		
+#define DI1_PIN				PC13	
+#define IS_DI1_on			(digitalRead(DI1_PIN)==LOW)
+
+#define DI2_PIN				PC14	
+#define IS_DI2_on			(digitalRead(DI2_PIN)==LOW)
+
+#define DI3_PIN				PC15	
+#define IS_DI3_on			(digitalRead(DI3_PIN)==LOW)
+
+//Define up to 4 direct input channels
+//CHANNEL1 - 2pos switch
+#define DI_CH1_read			IS_DI1_on ? PPM_MAX_100*2 : PPM_MIN_100*2
+//CHANNEL2 - 3pos switch
+#define DI_CH2_read			IS_DI2_on ? PPM_MAX_100*2 : (IS_DI2_on ? PPM_MAX_100 + PPM_MIN_100 : PPM_MIN_100*2)
+*/
+
 /* Available protocols and associated sub protocols to pick and choose from (Listed in alphabetical order)
 	PROTO_AFHDS2A
 		PWM_IBUS
@@ -501,6 +531,8 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 		X16_AH
 		IRDRONE
 		DHD_D4
+	PROTO_BAYANG_RX
+		NONE
 	PROTO_BUGS
 		NONE
 	PROTO_BUGSMINI
@@ -622,6 +654,8 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 		FY805
 	PROTO_NCC1701
 		NONE
+	PROTO_PELIKAN
+		NONE
 	PROTO_POTENSIC
 		NONE
 	PROTO_Q2X2
@@ -651,6 +685,8 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 	PROTO_SYMAX
 		SYMAX
 		SYMAX5C
+	PROTO_TIGER
+		NONE
 	PROTO_TRAXXAS
 		RX6519
 	PROTO_V2X2

@@ -130,6 +130,11 @@
 		#error "The Flyzone forced frequency tuning value is outside of the range -300..300."
 	#endif
 #endif
+#ifdef FORCE_PELIKAN_TUNING
+	#if ( FORCE_PELIKAN_TUNING < -300 ) || ( FORCE_PELIKAN_TUNING > 300 )
+		#error "The Pelikan forced frequency tuning value is outside of the range -300..300."
+	#endif
+#endif
 #ifdef FORCE_HUBSAN_TUNING
 	#if ( FORCE_HUBSAN_TUNING < -300 ) || ( FORCE_HUBSAN_TUNING > 300 )
 		#error "The Hubsan forced frequency tuning value is outside of the range -300..300."
@@ -145,6 +150,9 @@
 	#endif
 	#ifndef FORCE_FLYZONE_TUNING
 		#define FORCE_FLYZONE_TUNING 0
+	#endif
+	#ifndef FORCE_PELIKAN_TUNING
+		#define FORCE_PELIKAN_TUNING 0
 	#endif
 	#ifndef FORCE_HUBSAN_TUNING
 		#define FORCE_HUBSAN_TUNING 0
@@ -180,6 +188,7 @@
 	#undef BUGS_A7105_INO
 	#undef FLYZONE_A7105_INO
 	#undef AFHDS2A_RX_A7105_INO
+	#undef PELIKAN_A7105_INO
 #endif
 #ifndef CYRF6936_INSTALLED
 	#undef	DEVO_CYRF6936_INO
@@ -239,6 +248,8 @@
 	#undef	XN297L_CC2500_EMU
 	#undef	POTENSIC_NRF24L01_INO
 	#undef	ZSX_NRF24L01_INO
+	#undef	BAYANG_RX_NRF24L01_INO
+	#undef	TIGER_NRF24L01_INO
 #endif
 
 //Make sure telemetry is selected correctly
@@ -266,6 +277,8 @@
 	#undef AFHDS2A_RX_TELEMETRY
 	#undef AFHDS2A_RX_A7105_INO
 	#undef HOTT_FW_TELEMETRY
+	#undef BAYANG_RX_TELEMETRY
+	#undef BAYANG_RX_NRF24L01_INO
 #else
 	#if defined(MULTI_TELEMETRY) && defined(MULTI_STATUS)
 		#error You should choose either MULTI_TELEMETRY or MULTI_STATUS but not both.
@@ -281,6 +294,10 @@
 	#if not defined(AFHDS2A_RX_A7105_INO) || not defined(AFHDS2A_RX_TELEMETRY)
 		#undef AFHDS2A_RX_TELEMETRY
 		#undef AFHDS2A_RX_A7105_INO
+	#endif
+	#if not defined(BAYANG_RX_NRF24L01_INO) || not defined(BAYANG_RX_TELEMETRY)
+		#undef BAYANG_RX_TELEMETRY
+		#undef BAYANG_RX_NRF24L01_INO
 	#endif
 	#if not defined(BAYANG_NRF24L01_INO)
 		#undef BAYANG_HUB_TELEMETRY
@@ -321,7 +338,7 @@
 	#if not defined(HOTT_CC2500_INO)
 		#undef HOTT_FW_TELEMETRY
 	#endif
-	#if not defined(HOTT_FW_TELEMETRY) && not defined(DSM_TELEMETRY) && not defined(SPORT_TELEMETRY) && not defined(HUB_TELEMETRY) && not defined(HUBSAN_HUB_TELEMETRY) && not defined(BUGS_HUB_TELEMETRY) && not defined(NCC1701_HUB_TELEMETRY) && not defined(BAYANG_HUB_TELEMETRY) && not defined(CABELL_HUB_TELEMETRY) && not defined(AFHDS2A_HUB_TELEMETRY) && not defined(AFHDS2A_FW_TELEMETRY) && not defined(MULTI_TELEMETRY) && not defined(MULTI_STATUS) && not defined(HITEC_HUB_TELEMETRY) && not defined(HITEC_FW_TELEMETRY) && not defined(SCANNER_TELEMETRY) && not defined(FRSKY_RX_TELEMETRY) && not defined(AFHDS2A_RX_TELEMETRY)
+	#if not defined(HOTT_FW_TELEMETRY) && not defined(DSM_TELEMETRY) && not defined(SPORT_TELEMETRY) && not defined(HUB_TELEMETRY) && not defined(HUBSAN_HUB_TELEMETRY) && not defined(BUGS_HUB_TELEMETRY) && not defined(NCC1701_HUB_TELEMETRY) && not defined(BAYANG_HUB_TELEMETRY) && not defined(CABELL_HUB_TELEMETRY) && not defined(AFHDS2A_HUB_TELEMETRY) && not defined(AFHDS2A_FW_TELEMETRY) && not defined(MULTI_TELEMETRY) && not defined(MULTI_STATUS) && not defined(HITEC_HUB_TELEMETRY) && not defined(HITEC_FW_TELEMETRY) && not defined(SCANNER_TELEMETRY) && not defined(FRSKY_RX_TELEMETRY) && not defined(AFHDS2A_RX_TELEMETRY) && not defined(BAYANG_RX_TELEMETRY)
 		#undef TELEMETRY
 		#undef INVERT_TELEMETRY
 		#undef MULTI_TELEMETRY
@@ -340,6 +357,10 @@
 #if not defined(MULTI_TELEMETRY)
 	#undef MULTI_SYNC
 	#undef MULTI_NAMES
+#endif
+
+#if defined(MULTI_TELEMETRY)
+	#define MULTI_NAMES
 #endif
 
 //Make sure TX is defined correctly
@@ -392,4 +413,19 @@
 
 #if defined (STM32_BOARD) && defined (DEBUG_SERIAL) && defined (NRF24L01_INSTALLED)
 	#define XN297DUMP_NRF24L01_INO
+#endif
+
+//Check if Direct inputs defined correctly
+#if defined (ENABLE_DIRECT_INPUTS) 
+	#if not defined (STM32_BOARD) || not defined (ENABLE_PPM) || defined (ENABLE_SERIAL)
+		#error You can enable dirct inputs only in PPM mode and only for STM32 board.
+	#endif
+
+	#if not defined (DI1_PIN) && not defined (DI2_PIN) && not defined (DI3_PIN) && not defined (DI4_PIN)
+		#error You must define at least 1 direct input pin or undefine ENABLE_DIRECT_INPUTS in config.
+	#endif
+	
+	#if not defined (DI_CH1_read) && not defined (DI_CH2_read) && not defined (DI_CH3_read) && not defined (DI_CH4_read)
+		#error You must define at least 1 direct input chanell read macros or undefine ENABLE_DIRECT_INPUTS in config.
+	#endif
 #endif

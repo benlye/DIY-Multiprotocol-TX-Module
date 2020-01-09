@@ -197,6 +197,11 @@ void A7105_AdjustLOBaseFreq(uint8_t cmd)
 					offset=(int16_t)FORCE_FLYZONE_TUNING;
 				#endif
 				break;
+			case PROTO_PELIKAN:
+				#ifdef FORCE_PELIKAN_TUNING
+					offset=(int16_t)FORCE_PELIKAN_TUNING;
+				#endif
+				break;
 			case PROTO_AFHDS2A:
 			case PROTO_AFHDS2A_RX:
 				#ifdef FORCE_AFHDS2A_TUNING
@@ -219,12 +224,22 @@ void A7105_AdjustLOBaseFreq(uint8_t cmd)
 	offset<<=1;
 	if(offset < 0)
 	{
-		bip = 0x4a;	// 2368 MHz
+		#ifdef PROTO_PELIKAN
+		if(protocol==PROTO_PELIKAN)
+			bip = 0x63;
+		else
+		#endif
+			bip = 0x4a;	// 2368 MHz
 		bfp = 0xffff + offset;
 	}
 	else
 	{
-		bip = 0x4b;	// 2400 MHz (default)
+		#ifdef PROTO_PELIKAN
+		if(protocol==PROTO_PELIKAN)
+			bip = 0x64;	// default
+		else
+		#endif
+			bip = 0x4b;	// 2400 MHz (default)
 		bfp = offset;
 	}
 	A7105_WriteReg( A7105_11_PLL_III, bip);
@@ -293,6 +308,14 @@ const uint8_t PROGMEM HUBSAN_A7105_regs[] = {
 	0xFF, 0xFF // 30 - 31
 };
 #endif
+#ifdef PELIKAN_A7105_INO
+const uint8_t PROGMEM PELIKAN_A7105_regs[] = {
+	0xff, 0x42, 0x00, 0x0F, 0x00, 0xff, 0xff ,0x00, 0x00, 0x00, 0x00, 0x01, 0x21, 0xb7, 0x01, 0x50,	// 00 - 0f
+	0x96, 0x64, 0x00, 0x02, 0x16, 0x2f, 0x12, 0x00, 0x62, 0x80, 0x80, 0x00, 0x0a, 0x32, 0xc3, 0x07,	// 10 - 1f
+	0x16, 0x00, 0x00, 0xff, 0x00, 0x00, 0x3b, 0x00, 0x1f, 0x47, 0x80, 0x03, 0x01, 0x45, 0x18, 0x00,	// 20 - 2f
+	0x01, 0x0f // 30 - 31
+};
+#endif
 
 #define ID_NORMAL 0x55201041
 #define ID_PLUS   0xAA201041
@@ -306,6 +329,14 @@ void A7105_Init(void)
 		{
 			A7105_Regs=(uint8_t*)FLYZONE_A7105_regs;
 			A7105_WriteID(0x25A53C45);
+		}
+		else
+	#endif
+	#ifdef PELIKAN_A7105_INO
+		if(protocol==PROTO_PELIKAN)
+		{
+			A7105_Regs=(uint8_t*)PELIKAN_A7105_regs;
+			A7105_WriteID(0x06230623);
 		}
 		else
 	#endif
@@ -391,17 +422,21 @@ void A7105_Init(void)
 				case PROTO_FLYZONE:
 					vco_calibration1=0x02;
 					break;
+				case PROTO_PELIKAN:
+					vco_calibration1=0x0C;
+					break;
 				default:
 					vco_calibration1=0x0A;
 					break;
 			}
 			A7105_WriteReg(A7105_25_VCO_SBCAL_I,vco_calibration1);	//Reset VCO Band calibration
 		}
-
 	A7105_SetTxRxMode(TX_EN);
 	A7105_SetPower();
 
-	A7105_AdjustLOBaseFreq(0);
+	#ifdef USE_A7105_CH15_TUNING
+		A7105_AdjustLOBaseFreq(0);
+	#endif
 	
 	A7105_Strobe(A7105_STANDBY);
 }

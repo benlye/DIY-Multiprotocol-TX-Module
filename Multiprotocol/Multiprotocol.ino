@@ -179,7 +179,7 @@ volatile uint8_t rx_idx=0, rx_len=0;
 
 
 // Telemetry
-#define TELEMETRY_BUFFER_SIZE 30
+#define TELEMETRY_BUFFER_SIZE 32
 uint8_t packet_in[TELEMETRY_BUFFER_SIZE];//telemetry receiving packets
 #if defined(TELEMETRY)
 	#ifdef MULTI_SYNC
@@ -227,8 +227,9 @@ uint8_t packet_in[TELEMETRY_BUFFER_SIZE];//telemetry receiving packets
 	#endif
 
 	//RX protocols
-	#if defined(AFHDS2A_RX_A7105_INO) || defined(FRSKY_RX_CC2500_INO)
+	#if defined(AFHDS2A_RX_A7105_INO) || defined(FRSKY_RX_CC2500_INO) || defined(BAYANG_RX_NRF24L01_INO)
 		bool rx_data_started;
+		bool rx_data_received;
 		bool rx_disable_lna;
 		uint16_t rx_rc_chan[16];
 	#endif
@@ -330,6 +331,21 @@ void setup()
 		pinMode(S2_pin,INPUT_PULLUP);
 		pinMode(S3_pin,INPUT_PULLUP);
 		pinMode(S4_pin,INPUT_PULLUP);
+
+		#if defined ENABLE_DIRECT_INPUTS
+			#if defined (DI1_PIN)
+				pinMode(DI1_PIN,INPUT_PULLUP);
+			#endif
+			#if defined (DI2_PIN)
+				pinMode(DI2_PIN,INPUT_PULLUP);
+			#endif
+			#if defined (DI3_PIN)
+				pinMode(DI3_PIN,INPUT_PULLUP);
+			#endif
+			#if defined (DI4_PIN)
+				pinMode(DI4_PIN,INPUT_PULLUP);
+			#endif
+		#endif
 		//Random pins
 		pinMode(PB0, INPUT_ANALOG); // set up pin for analog input
 
@@ -665,8 +681,29 @@ bool Update_All()
 		if(mode_select!=MODE_SERIAL && IS_PPM_FLAG_on)		// PPM mode and a full frame has been received
 		{
 			uint32_t chan_or=chan_order;
-			uint8_t ch;
-			for(uint8_t i=0;i<PPM_chan_max;i++)
+			uint8_t ch;		
+			uint8_t channelsCount = PPM_chan_max;
+			
+			#ifdef ENABLE_DIRECT_INPUTS				
+				#ifdef DI_CH1_read
+					PPM_data[channelsCount] = DI_CH1_read;
+					channelsCount++;
+				#endif
+				#ifdef DI_CH2_read
+					PPM_data[channelsCount] = DI_CH2_read;
+					channelsCount++;
+				#endif
+				#ifdef DI_CH3_read
+					PPM_data[channelsCount] = DI_CH3_read;
+					channelsCount++;
+				#endif
+				#ifdef DI_CH4_read
+					PPM_data[channelsCount] = DI_CH4_read;
+					channelsCount++;
+				#endif 
+			#endif
+			
+			for(uint8_t i=0;i<channelsCount;i++)
 			{ // update servo data without interrupts to prevent bad read
 				uint16_t val;
 				cli();										// disable global int
@@ -687,6 +724,7 @@ bool Update_All()
 				else
 					Channel_data[i]=val;
 			}
+       
 			PPM_FLAG_off;									// wait for next frame before update
 			#ifdef FAILSAFE_ENABLE
 				PPM_failsafe();
@@ -699,7 +737,7 @@ bool Update_All()
 	update_led_status();
 	#if defined(TELEMETRY)
 		#if ( !( defined(MULTI_TELEMETRY) || defined(MULTI_STATUS) ) )
-			if( (protocol == PROTO_FRSKY_RX) || (protocol == PROTO_SCANNER) || (protocol==PROTO_FRSKYD) || (protocol==PROTO_BAYANG) || (protocol==PROTO_NCC1701) || (protocol==PROTO_BUGS) || (protocol==PROTO_BUGSMINI) || (protocol==PROTO_HUBSAN) || (protocol==PROTO_AFHDS2A) || (protocol==PROTO_FRSKYX) || (protocol==PROTO_DSM) || (protocol==PROTO_CABELL) || (protocol==PROTO_HITEC) || (protocol==PROTO_HOTT))
+			if((protocol == PROTO_BAYANG_RX) || (protocol == PROTO_AFHDS2A_RX) || (protocol == PROTO_FRSKY_RX) || (protocol == PROTO_SCANNER) || (protocol==PROTO_FRSKYD) || (protocol==PROTO_BAYANG) || (protocol==PROTO_NCC1701) || (protocol==PROTO_BUGS) || (protocol==PROTO_BUGSMINI) || (protocol==PROTO_HUBSAN) || (protocol==PROTO_AFHDS2A) || (protocol==PROTO_FRSKYX) || (protocol==PROTO_DSM) || (protocol==PROTO_CABELL) || (protocol==PROTO_HITEC) || (protocol==PROTO_HOTT))
 		#endif
 				if(IS_DISABLE_TELEM_off)
 					TelemetryUpdate();
@@ -991,7 +1029,7 @@ static void protocol_init()
 			TX_RX_PAUSE_off;
 			TX_MAIN_PAUSE_off;
 			tx_resume();
-			#if defined(AFHDS2A_RX_A7105_INO) || defined(FRSKY_RX_CC2500_INO)
+			#if defined(AFHDS2A_RX_A7105_INO) || defined(FRSKY_RX_CC2500_INO) || defined(BAYANG_RX_NRF24L01_INO)
 				for(uint8_t ch=0; ch<16; ch++)
 					rx_rc_chan[ch] = 1024;
 			#endif
@@ -1055,6 +1093,13 @@ static void protocol_init()
 						PE1_off;	//antenna RF1
 						next_callback = initAFHDS2A_Rx();
 						remote_callback = AFHDS2A_Rx_callback;
+						break;
+				#endif
+				#if defined(PELIKAN_A7105_INO)
+					case PROTO_PELIKAN:
+						PE1_off;	//antenna RF1
+						next_callback = initPelikan();
+						remote_callback = ReadPelikan;
 						break;
 				#endif
 			#endif
@@ -1421,6 +1466,18 @@ static void protocol_init()
 						remote_callback = FX816_callback;
 						break;
 				#endif
+				#if defined(BAYANG_RX_NRF24L01_INO)
+					case PROTO_BAYANG_RX:
+						next_callback=initBayang_Rx();
+						remote_callback = Bayang_Rx_callback;
+						break;
+				#endif
+				#if defined(TIGER_NRF24L01_INO)
+					case PROTO_TIGER:
+						next_callback=initTIGER();
+						remote_callback = TIGER_callback;
+						break;
+				#endif
 				#if defined(XN297DUMP_NRF24L01_INO)
 					case PROTO_XN297DUMP:
 						next_callback=initXN297Dump();
@@ -1615,24 +1672,6 @@ void update_serial_data()
 		#endif
 	}
 
-	if(prev_ch_mapping!=IS_DISABLE_CH_MAP_on)
-	{
-		prev_ch_mapping=IS_DISABLE_CH_MAP_on;
-		if(IS_DISABLE_CH_MAP_on)
-		{
-			for(uint8_t i=0;i<4;i++)
-				CH_AETR[i]=CH_TAER[i]=CH_EATR[i]=i;
-			debugln("DISABLE_CH_MAP_on");
-		}
-		else
-		{
-			CH_AETR[0]=AILERON;CH_AETR[1]=ELEVATOR;CH_AETR[2]=THROTTLE;CH_AETR[3]=RUDDER;
-			CH_TAER[0]=THROTTLE;CH_TAER[1]=AILERON;CH_TAER[2]=ELEVATOR;CH_TAER[3]=RUDDER;
-			CH_EATR[0]=ELEVATOR;CH_EATR[1]=AILERON;CH_EATR[2]=THROTTLE;CH_EATR[3]=RUDDER;
-			debugln("DISABLE_CH_MAP_off");
-		}
-	}
-	
 	if( (rx_ok_buff[0] != cur_protocol[0]) || ((rx_ok_buff[1]&0x5F) != (cur_protocol[1]&0x5F)) || ( (rx_ok_buff[2]&0x7F) != (cur_protocol[2]&0x7F) ) )
 	{ // New model has been selected
 		CHANGE_PROTOCOL_FLAG_on;				//change protocol
@@ -1673,6 +1712,27 @@ void update_serial_data()
 	for(uint8_t i=0;i<3;i++)
 		cur_protocol[i] =  rx_ok_buff[i];
 
+	//disable channel mapping
+	if(!IS_CHMAP_PROTOCOL)						//not a protocol supporting ch map to be disabled
+		DISABLE_CH_MAP_off;
+	if(prev_ch_mapping!=IS_DISABLE_CH_MAP_on)
+	{
+		prev_ch_mapping=IS_DISABLE_CH_MAP_on;
+		if(IS_DISABLE_CH_MAP_on)
+		{
+			for(uint8_t i=0;i<4;i++)
+				CH_AETR[i]=CH_TAER[i]=CH_EATR[i]=i;
+			debugln("DISABLE_CH_MAP_on");
+		}
+		else
+		{
+			CH_AETR[0]=AILERON;CH_AETR[1]=ELEVATOR;CH_AETR[2]=THROTTLE;CH_AETR[3]=RUDDER;
+			CH_TAER[0]=THROTTLE;CH_TAER[1]=AILERON;CH_TAER[2]=ELEVATOR;CH_TAER[3]=RUDDER;
+			CH_EATR[0]=ELEVATOR;CH_EATR[1]=AILERON;CH_EATR[2]=THROTTLE;CH_EATR[3]=RUDDER;
+			debugln("DISABLE_CH_MAP_off");
+		}
+	}
+	
 	// decode channel/failsafe values
 	volatile uint8_t *p=rx_ok_buff+3;
 	uint8_t dec=-3;
@@ -1699,6 +1759,12 @@ void update_serial_data()
 	#endif
 	if(rx_len>27)
 	{ // Data available for the current protocol
+		#ifdef FRSKYX_CC2500_INO
+			if(protocol==PROTO_FRSKYX && rx_len==28)
+			{//Protocol waiting for 1 byte during bind
+				binding_idx=rx_ok_buff[27];
+			}
+		#endif
 		#ifdef SPORT_SEND
 			if(protocol==PROTO_FRSKYX && rx_len==35)
 			{//Protocol waiting for 8 bytes

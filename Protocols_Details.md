@@ -22,8 +22,7 @@ Here are detailed descriptions of every supported protocols (sorted by RF module
       - Bind channel is going from -100% to +100%
 
 * Additional notes:
-  - It's recommended to combine Throttle cut with another button to drive the bind channel. This will prevent to launch a bind while flying...
-  - Bind channel does not have to be assigned to a free channel. Since it only acts when Throttle is Low (and throttle cut active), it could be used on the same channel as Flip for example since you are not going to flip your model when Throttle is low... Same goes for RTH and such other features.
+  - **It's recommended to combine the bind switch with Throttle cut or throttle at -100% to drive the bind channel. This will prevent to launch a bind while flying** and enable you to use the bind switch for something else.
   - Using channel 16 for the bind channel seems the most relevant as only one protocol so far is using 16 channels which is FrSkyX. But even on FrSkyX this feature won't have any impact since there is NO valid reason to have Autobind set to Y for such a protocol.
 
 ## Protocol selection in PPM mode
@@ -69,6 +68,7 @@ Protocol Name|Protocol Number|Sub_Proto 0|Sub_Proto 1|Sub_Proto 2|Sub_Proto 3|Su
 ---|---|---|---|---|---|---|---|---|---|---|---
 [Assan](Protocols_Details.md#ASSAN---24)|24|ASSAN||||||||NRF24L01|
 [Bayang](Protocols_Details.md#BAYANG---14)|14|Bayang|H8S3D|X16_AH|IRDRONE|DHD_D4||||NRF24L01|XN297
+[Bayang RX](Protocols_Details.md#BAYANG-RX---59)|59|||||||||NRF24L01|XN297
 [Bugs](Protocols_Details.md#BUGS---41)|41|BUGS||||||||A7105|
 [BugsMini](Protocols_Details.md#BUGSMINI---42)|42|BUGSMINI|BUGS3H|||||||NRF24L01|XN297
 [Cabell](Protocols_Details.md#Cabell---34)|34|Cabell_V3|C_TELEM|-|-|-|-|F_SAFE|UNBIND|NRF24L01|
@@ -108,6 +108,7 @@ CFlie|38|CFlie||||||||NRF24L01|
 [MT99xx](Protocols_Details.md#MT99XX---17)|17|MT|H7|YZ|LS|FY805||||NRF24L01|XN297
 [NCC1701](Protocols_Details.md#NCC1701---44)|44|NCC1701||||||||NRF24L01|
 [OpenLRS](Protocols_Details.md#OpenLRS---27)|27|||||||||None|
+[Pelikan](Protocols_Details.md#Pelikan---60)|60|||||||||A7105|
 [Potensic](Protocols_Details.md#Potensic---51)|51|A20||||||||NRF24L01|XN297
 [Q2X2](Protocols_Details.md#Q2X2---29)|29|Q222|Q242|Q282||||||NRF24L01|
 [Q303](Protocols_Details.md#Q303---31)|31|Q303|CX35|CX10D|CX10WD|||||NRF24L01|XN297
@@ -117,6 +118,7 @@ CFlie|38|CFlie||||||||NRF24L01|
 [Shenqi](Protocols_Details.md#Shenqi---19)|19|Shenqi||||||||NRF24L01|LT8900
 [SLT](Protocols_Details.md#SLT---11)|11|SLT_V1|SLT_V2|Q100|Q200|MR100||||NRF24L01|
 [SymaX](Protocols_Details.md#Symax---10)|10|SYMAX|SYMAX5C|||||||NRF24L01|
+[Tiger](Protocols_Details.md#Tiger---61)|61|Tiger||||||||NRF24L01|XN297
 [Traxxas](Protocols_Details.md#Traxxas---43)|43|RX6519||||||||CYRF6936|
 [V2x2](Protocols_Details.md#V2X2---5)|5|V2x2|JXD506|||||||NRF24L01|
 [V761](Protocols_Details.md#V761---48)|48|V761||||||||NRF24L01|XN297
@@ -194,7 +196,7 @@ Note that the RX ouput will be AETR whatever the input channel order is.
 ## FLYSKY AFHDS2A RX - *56*
 The Flysky AFHDS2A receiver protocol enables master/slave trainning, separate access from 2 different radios to the same model,...
 
-Available in OpenTX 2.3.2, Trainer Mode Master/Multi
+Available in OpenTX 2.3.3, Trainer Mode Master/Multi
 
 Extended limits supported
 
@@ -255,6 +257,19 @@ A|E|T|R|ARM|ANGLE|FLIP|PICTURE|VIDEO|LED
 
 ANGLE: angle is +100%, acro is -100%
 
+## Pelikan - *60*
+Models: TX: CADET PRO V4, RX: RX-602 V4
+
+Extended limits supported
+
+**Only 1 ID for now**
+
+CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8
+---|---|---|---|---|---|---|---
+A|E|T|R|CH5|CH6|CH7|CH8
+
+Note that the RX ouput will be AETR.
+
 ***
 # CC2500 RF Module
 
@@ -307,7 +322,7 @@ Models: FrSky receivers D4R and D8R. DIY RX-F801 and RX-F802 receivers. Also kno
 
 Extended limits supported
 
-Telemetry enabled for A0, A1, RSSI, TSSI and Hub
+Telemetry enabled for A0, A1, RSSI, TX_RSSI, TX_LQI and Hub. Lowest the TX_LQI value is best the quality link is, it's a good indicator of how well the module is tuned.
 
 Option for this protocol corresponds to fine frequency tuning. This value is different for each Module and **must** be accurate otherwise the link will not be stable.
 Check the [Frequency Tuning page](/docs/Frequency_Tuning.md) to determine it.
@@ -321,7 +336,7 @@ Models: FrSky receivers X4R, X6R and X8R. Also known as D16.
 
 Extended limits and failsafe supported
 
-Telemetry enabled for A1 (RxBatt), A2, RSSI, TSSI and Hub
+Telemetry enabled for A1 (RxBatt), A2, RSSI, TX_RSSI, TX_LQI and Hub. Lowest the TX_LQI value is best the quality link is, it's a good indicator of how well the module is tuned.
 
 Option for this protocol corresponds to fine frequency tuning. This value is different for each Module and **must** be accurate otherwise the link will not be stable.
 Check the [Frequency Tuning page](/docs/Frequency_Tuning.md) to determine it.
@@ -357,7 +372,7 @@ CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8
 ## FRSKYX_RX - *55*
 The FrSkyX receiver protocol enables master/slave trainning, separate access from 2 different radios to the same model,...
 
-Available in OpenTX 2.3.2, Trainer Mode Master/Multi
+Available in OpenTX 2.3.3, Trainer Mode Master/Multi
 
 Extended limits supported
 
@@ -397,14 +412,14 @@ CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9
 ### Sub_protocol OPT_FW - *0*
 OPTIMA RXs
 
-Full telemetry available on OpenTX 2.3.2+, still in progress for erskyTx.
+Full telemetry available on OpenTX 2.3.3+, still in progress for erskyTx. Lowest the TX_LQI value is best the quality link is, it's a good indicator of how well the module is tuned.
 
 **The TX must be close to the RX for the bind negotiation to complete successfully**
 
 ### Sub_protocol OPT_HUB - *1*
 OPTIMA RXs
 
-Basic telemetry using FrSky Hub on er9x, erskyTX, OpenTX and any radio with FrSky telemetry support with RX voltage, VOLT2 voltage, TX RSSI and TX LQI. 
+Basic telemetry using FrSky Hub on er9x, erskyTX, OpenTX and any radio with FrSky telemetry support with RX voltage, VOLT2 voltage, TX_RSSI and TX_LQI. Lowest the TX_LQI value is best the quality link is, it's a good indicator of how well the module is tuned.
 
 **The TX must be close to the RX for the bind negotiation to complete successfully**
 
@@ -429,7 +444,7 @@ CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10|CH11|CH12
 ---|---|---|---|---|---|---|---|---|----|----|----
 CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10|CH11|CH12
 
-Basic telemetry is available on OpenTX 2.3.2+ with RX voltage, Rx temperature, RX RSSI, RX LQI, TX RSSI and TX LQI.
+Basic telemetry is available on OpenTX 2.3.3+ with RX voltage, Rx temperature, RX RSSI, RX LQI, TX RSSI and TX LQI. Lowest the TX_LQI value is best the quality link is, it's a good indicator of how well the module is tuned.
 
 ## SFHSS - *21*
 Models: Futaba RXs and XK models.
@@ -568,9 +583,9 @@ A|E|T|R|CH5|CH6|CH7|CH8|CH9|CH10|CH11|CH12|----|TH_KILL
 
 Notes:
  - model/type/number of channels indicated on the RX can be different from what the RX is in fact wanting to see. So don't hesitate to test different combinations until you have something working. Using Auto is the best way to find these settings.
- - RX output will match the Spektrum standard TAER independently of the input configuration AETR, RETA...
+ - RX output will match the Spektrum standard TAER independently of the input configuration AETR, RETA... unless on OpenTX 2.3.3+ you use the "Disable channel mapping" feature on the GUI.
  - RX output will match the Spektrum standard throw (1500µs +/- 400µs -> 1100..1900µs) for a 100% input. This is true for both Serial and PPM input. For PPM, make sure the end points PPM_MIN_100 and PPM_MAX_100 in _config.h are matching your TX ouput. The maximum ouput is 1000..2000µs based on an input of 125%.
-    - If you want to override the above and get maximum throw (old way) uncomment in _config.h the line #define DSM_MAX_THROW . In this mode to achieve standard throw use a channel weight of 84%.
+    - If you want to override the above and get maximum throw either uncomment in _config.h the line #define DSM_MAX_THROW or on OpenTX 2.3.3+ use the "Enable max throw" feature on the GUI (0=No,1=Yes). In this mode to achieve standard throw use a channel weight of 84%.
  - TH_KILL is a feature which is enabled on channel 14 by default (can be disabled/changed) in the _config.h file. Some models (X-Vert, Blade 230S...) require a special position to instant stop the motor(s). If the channel 14 is above -50% the throttle is untouched but if it is between -50% and -100%, the throttle output will be forced between -100% and -150%. For example, a value of -80% applied on channel 14 will instantly kill the motors on the X-Vert.
 
 ### Sub_protocol DSM2_22 - *0*
@@ -673,6 +688,17 @@ Model: DHD D4
 CH12|CH13
 ----|----
 TAKE_OFF|EMG_STOP
+
+## BAYANG RX - *59*
+The Bayang receiver protocol enables master/slave trainning, separate access from 2 different radios to the same model,...
+
+See the [BAYANG protocol](Protocols_Details.md#BAYANG---14) on how to activate ANAUX1 and ANAUX2 (Option/Telemetry=2).
+
+CH1|CH2|CH3|CH4|CH5|CH6|CH7|CH8|CH9|CH10
+---|---|---|---|---|---|---|---|---|---
+A|E|T|R|ANAUX1|ANAUX2|FLIP|RTH|PICTURE|VIDEO
+
+Available in OpenTX 2.3.3, Trainer Mode Master/Multi
 
 ## BUGSMINI - *42*
 Models: MJX Bugs 3 Mini and 3H
@@ -1252,6 +1278,15 @@ Model: JXD 506
 CH10|CH11|CH12
 ---|---|---
 Start/Stop|EMERGENCY|CAMERA_UP/DN
+
+## Tiger - *61*
+Autobind protocol
+
+**Only 1 ID**
+
+CH1|CH2|CH3|CH4|CH5|CH6
+---|---|---|---|---|---
+A|E|T|R|FLIP|LIGHT
 
 ## V761 - *48*
 Model: Volantex V761 and may be other
