@@ -24,7 +24,7 @@
 #define __USART2_RX_INTERRUPT_DISABLE UCSR0B &= ~_BV(RXCIE0)
 
 /* Important notes:
-	- Max value is 16000µs
+	- Max value is 16000us
 	- delay is not accurate due to interrupts happening */
 void delayMicroseconds(unsigned int us)
 {

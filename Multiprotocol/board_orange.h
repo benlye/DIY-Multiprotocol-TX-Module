@@ -103,7 +103,7 @@ void init()
 }
 
 /* Important notes:
-	- Max value is 16000µs
+	- Max value is 16000us
 	- delay is not accurate due to interrupts happening */
 void delayMicroseconds(unsigned int us)
 {
