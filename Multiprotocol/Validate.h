@@ -79,6 +79,11 @@
 		#error "The FrSkyD forced frequency tuning value is outside of the range -127..127."
 	#endif
 #endif
+#ifdef FORCE_FRSKYL_TUNING
+	#if ( FORCE_FRSKYL_TUNING < -127 ) || ( FORCE_FRSKYL_TUNING > 127 )
+		#error "The FrSkyL forced frequency tuning value is outside of the range -127..127."
+	#endif
+#endif
 #ifdef FORCE_FRSKYV_TUNING
 	#if ( FORCE_FRSKYV_TUNING < -127 ) || ( FORCE_FRSKYV_TUNING > 127 )
 		#error "The FrSkyV forced frequency tuning value is outside of the range -127..127."
@@ -94,6 +99,11 @@
 		#error "The HITEC forced frequency tuning value is outside of the range -127..127."
 	#endif
 #endif
+#ifdef FORCE_HOTT_TUNING
+	#if ( FORCE_HOTT_TUNING < -127 ) || ( FORCE_HOTT_TUNING > 127 )
+		#error "The HOTT forced frequency tuning value is outside of the range -127..127."
+	#endif
+#endif
 #ifdef FORCE_REDPINE_TUNING
 	#if ( FORCE_REDPINE_TUNING < -127 ) || ( FORCE_REDPINE_TUNING > 127 )
 		#error "The REDPINE forced frequency tuning value is outside of the range -127..127."
@@ -104,9 +114,9 @@
 		#error "The SFHSS forced frequency tuning value is outside of the range -127..127."
 	#endif
 #endif
-#ifdef FORCE_HOTT_TUNING
-	#if ( FORCE_HOTT_TUNING < -127 ) || ( FORCE_HOTT_TUNING > 127 )
-		#error "The HOTT forced frequency tuning value is outside of the range -127..127."
+#ifdef FORCE_SKYARTEC_TUNING
+	#if ( FORCE_SKYARTEC_TUNING < -127 ) || ( FORCE_SKYARTEC_TUNING > 127 )
+		#error "The SKYARTEC forced frequency tuning value is outside of the range -127..127."
 	#endif
 #endif
 //A7105
@@ -175,6 +185,7 @@
 	#undef CC25_CSN_pin
 	#undef NRF24L01_INSTALLED	// Disable NRF for OrangeTX module
 	#undef NRF_CSN_pin
+	#undef SX1276_INSTALLED		// Disable NRF for OrangeTX module
 	#define TELEMETRY			// Enable telemetry
 	#define INVERT_TELEMETRY	// Enable invert telemetry
 	#define DSM_TELEMETRY		// Enable DSM telemetry
@@ -182,12 +193,12 @@
 
 //Make sure protocols are selected correctly
 #ifndef A7105_INSTALLED
-	#undef FLYSKY_A7105_INO
-	#undef HUBSAN_A7105_INO
 	#undef AFHDS2A_A7105_INO
-	#undef BUGS_A7105_INO
-	#undef FLYZONE_A7105_INO
 	#undef AFHDS2A_RX_A7105_INO
+	#undef BUGS_A7105_INO
+	#undef FLYSKY_A7105_INO
+	#undef FLYZONE_A7105_INO
+	#undef HUBSAN_A7105_INO
 	#undef PELIKAN_A7105_INO
 #endif
 #ifndef CYRF6936_INSTALLED
@@ -195,61 +206,77 @@
 	#undef	DSM_CYRF6936_INO
 	#undef	HOTT_CC2500_INO
 	#undef	J6PRO_CYRF6936_INO
+	#undef	TRAXXAS_CYRF6936_INO
 	#undef	WFLY_CYRF6936_INO
 	#undef	WK2x01_CYRF6936_INO
-	#undef	TRAXXAS_CYRF6936_INO
 #endif
 #ifndef CC2500_INSTALLED
+	#undef	CORONA_CC2500_INO
+	#undef	ESKY150V2_CC2500_INO
 	#undef	FRSKYD_CC2500_INO
+	#undef	FRSKYL_CC2500_INO
 	#undef	FRSKYV_CC2500_INO
 	#undef	FRSKYX_CC2500_INO
-	#undef	SFHSS_CC2500_INO
-	#undef	CORONA_CC2500_INO
-	#undef	REDPINE_CC2500_INO
-	#undef	HITEC_CC2500_INO
-	#undef	XN297L_CC2500_EMU
-	#undef	SCANNER_CC2500_INO
 	#undef	FRSKY_RX_CC2500_INO
+	#undef	HITEC_CC2500_INO
 	#undef	HOTT_CC2500_INO
+	#undef	REDPINE_CC2500_INO
+	#undef	SCANNER_CC2500_INO
+	#undef	SFHSS_CC2500_INO
+	#undef	SKYARTEC_CC2500_INO
 #endif
 #ifndef NRF24L01_INSTALLED
+	#undef	ASSAN_NRF24L01_INO
 	#undef	BAYANG_NRF24L01_INO
+	#undef	BAYANG_RX_NRF24L01_INO
+	#undef	BUGSMINI_NRF24L01_INO
+	#undef	CABELL_NRF24L01_INO
+	#undef	CFLIE_NRF24L01_INO
 	#undef	CG023_NRF24L01_INO
 	#undef	CX10_NRF24L01_INO
+	#undef	DM002_NRF24L01_INO
+	#undef	E01X_NRF24L01_INO
 	#undef	ESKY_NRF24L01_INO
-	#undef	HISKY_NRF24L01_INO
-	#undef	KF606_NRF24L01_INO
-	#undef	KN_NRF24L01_INO
-	#undef	SLT_NRF24L01_INO
-	#undef	SYMAX_NRF24L01_INO
-	#undef	V2X2_NRF24L01_INO
-	#undef	YD717_NRF24L01_INO
-	#undef	MT99XX_NRF24L01_INO
-	#undef	MJXQ_NRF24L01_INO
-	#undef	SHENQI_NRF24L01_INO
+	#undef	ESKY150_NRF24L01_INO
+	#undef	ESKY150V2_CC2500_INO	// Use both CC2500 and NRF code
+	#undef	FQ777_NRF24L01_INO
 	#undef	FX816_NRF24L01_INO
 	#undef	FY326_NRF24L01_INO
-	#undef	FQ777_NRF24L01_INO
-	#undef	ASSAN_NRF24L01_INO
-	#undef	HONTAI_NRF24L01_INO
-	#undef	Q303_NRF24L01_INO
-	#undef	GW008_NRF24L01_INO
 	#undef	GD00X_NRF24L01_INO
-	#undef	DM002_NRF24L01_INO
-	#undef	CABELL_NRF24L01_INO
-	#undef	ESKY150_NRF24L01_INO
+	#undef	GW008_NRF24L01_INO
 	#undef	H8_3D_NRF24L01_INO
-	#undef	CFLIE_NRF24L01_INO
-	#undef	BUGSMINI_NRF24L01_INO
+	#undef	HISKY_NRF24L01_INO
+	#undef	HONTAI_NRF24L01_INO
+	#undef	KF606_NRF24L01_INO
+	#undef	KN_NRF24L01_INO
+	#undef	MJXQ_NRF24L01_INO
+	#undef	MT99XX_NRF24L01_INO
 	#undef	NCC1701_NRF24L01_INO
-	#undef	E01X_NRF24L01_INO
+	#undef	POTENSIC_NRF24L01_INO
+	#undef	PROPEL_NRF24L01_INO
+	#undef	Q303_NRF24L01_INO
+	#undef	SHENQI_NRF24L01_INO
+	#undef	SLT_NRF24L01_INO
+	#undef	SYMAX_NRF24L01_INO
+	#undef	TIGER_NRF24L01_INO
+	#undef	V2X2_NRF24L01_INO
 	#undef	V761_NRF24L01_INO
 	#undef	V911S_NRF24L01_INO
-	#undef	XN297L_CC2500_EMU
-	#undef	POTENSIC_NRF24L01_INO
+	#undef	XK_NRF24L01_INO
+	#undef	YD717_NRF24L01_INO
 	#undef	ZSX_NRF24L01_INO
-	#undef	BAYANG_RX_NRF24L01_INO
-	#undef	TIGER_NRF24L01_INO
+#endif
+#if not defined(STM32_BOARD)
+	#undef SX1276_INSTALLED
+#endif
+#ifndef SX1276_INSTALLED
+	#undef FRSKYR9_SX1276_INO
+#endif
+
+//OpenTX 2.3.x issue
+#if defined (FRSKYD_CC2500_INO) || defined(FRSKYV_CC2500_INO) || defined(FRSKYX_CC2500_INO)
+	#define	FRSKYX_CC2500_INO
+	#define	FRSKY_RX_CC2500_INO
 #endif
 
 //Make sure telemetry is selected correctly
@@ -279,6 +306,7 @@
 	#undef HOTT_FW_TELEMETRY
 	#undef BAYANG_RX_TELEMETRY
 	#undef BAYANG_RX_NRF24L01_INO
+	#undef DEVO_HUB_TELEMETRY
 #else
 	#if defined(MULTI_TELEMETRY) && defined(MULTI_STATUS)
 		#error You should choose either MULTI_TELEMETRY or MULTI_STATUS but not both.
@@ -301,6 +329,9 @@
 	#endif
 	#if not defined(BAYANG_NRF24L01_INO)
 		#undef BAYANG_HUB_TELEMETRY
+	#endif
+	#if not defined(DEVO_CYRF6936_INO)
+		#undef DEVO_HUB_TELEMETRY
 	#endif
 	#if not defined(NCC1701_NRF24L01_INO)
 		#undef NCC1701_HUB_TELEMETRY
@@ -338,7 +369,7 @@
 	#if not defined(HOTT_CC2500_INO)
 		#undef HOTT_FW_TELEMETRY
 	#endif
-	#if not defined(HOTT_FW_TELEMETRY) && not defined(DSM_TELEMETRY) && not defined(SPORT_TELEMETRY) && not defined(HUB_TELEMETRY) && not defined(HUBSAN_HUB_TELEMETRY) && not defined(BUGS_HUB_TELEMETRY) && not defined(NCC1701_HUB_TELEMETRY) && not defined(BAYANG_HUB_TELEMETRY) && not defined(CABELL_HUB_TELEMETRY) && not defined(AFHDS2A_HUB_TELEMETRY) && not defined(AFHDS2A_FW_TELEMETRY) && not defined(MULTI_TELEMETRY) && not defined(MULTI_STATUS) && not defined(HITEC_HUB_TELEMETRY) && not defined(HITEC_FW_TELEMETRY) && not defined(SCANNER_TELEMETRY) && not defined(FRSKY_RX_TELEMETRY) && not defined(AFHDS2A_RX_TELEMETRY) && not defined(BAYANG_RX_TELEMETRY)
+	#if not defined(HOTT_FW_TELEMETRY) && not defined(DSM_TELEMETRY) && not defined(SPORT_TELEMETRY) && not defined(HUB_TELEMETRY) && not defined(HUBSAN_HUB_TELEMETRY) && not defined(BUGS_HUB_TELEMETRY) && not defined(NCC1701_HUB_TELEMETRY) && not defined(BAYANG_HUB_TELEMETRY) && not defined(CABELL_HUB_TELEMETRY) && not defined(AFHDS2A_HUB_TELEMETRY) && not defined(AFHDS2A_FW_TELEMETRY) && not defined(MULTI_TELEMETRY) && not defined(MULTI_STATUS) && not defined(HITEC_HUB_TELEMETRY) && not defined(HITEC_FW_TELEMETRY) && not defined(SCANNER_TELEMETRY) && not defined(FRSKY_RX_TELEMETRY) && not defined(AFHDS2A_RX_TELEMETRY) && not defined(BAYANG_RX_TELEMETRY) && not defined(DEVO_HUB_TELEMETRY)
 		#undef TELEMETRY
 		#undef INVERT_TELEMETRY
 		#undef MULTI_TELEMETRY
@@ -357,9 +388,7 @@
 #if not defined(MULTI_TELEMETRY)
 	#undef MULTI_SYNC
 	#undef MULTI_NAMES
-#endif
-
-#if defined(MULTI_TELEMETRY)
+#else
 	#define MULTI_NAMES
 #endif
 

@@ -77,9 +77,7 @@
 #define CYRF6936_INSTALLED
 #define CC2500_INSTALLED
 #define NRF24L01_INSTALLED
-
-//If available use the CC2500 to emulate the XN297L @250Kbps instead of the NRF24L01. Comment to disable.
-#define XN297L_CC2500_EMU
+//#define SX1276_INSTALLED		// only supported on STM32 modules
 
 /** OrangeRX TX **/
 //If you compile for the OrangeRX TX module you need to select the correct board type.
@@ -94,9 +92,11 @@
 //Uncomment the lines below (remove the "//") and set an appropriate value (replace the "0") to enable. Valid range is -127 to +127.
 //#define FORCE_CORONA_TUNING	0
 //#define FORCE_FRSKYD_TUNING	0
+//#define FORCE_FRSKYL_TUNING	0
 //#define FORCE_FRSKYV_TUNING	0
 //#define FORCE_FRSKYX_TUNING	0
 //#define FORCE_SFHSS_TUNING	0
+//#define FORCE_SKYARTEC_TUNING	0
 //#define FORCE_HITEC_TUNING	0
 //#define FORCE_HOTT_TUNING		0
 //#define FORCE_REDPINE_TUNING	0
@@ -141,6 +141,7 @@
 //If you have 2 Multi modules which you want to share the same ID so you can use either to control the same RC model
 // then you can force the ID to a certain known value using the lines below.
 //Default is commented, you should uncoment only for test purpose or if you know exactly what you are doing!!!
+//The 8 numbers below can be anything between 0...9 and A..F
 //#define FORCE_GLOBAL_ID	0x12345678
 
 //Protocols using the CYRF6936 (DSM, Devo, Walkera...) are using the CYRF ID instead which should prevent duplicated IDs.
@@ -176,6 +177,8 @@
 
 //The protocols below need a CC2500 to be installed
 #define	CORONA_CC2500_INO
+#define	ESKY150V2_CC2500_INO	//Need both CC2500 and NRF
+#define	FRSKYL_CC2500_INO
 #define	FRSKYD_CC2500_INO
 #define	FRSKYV_CC2500_INO
 #define	FRSKYX_CC2500_INO
@@ -184,6 +187,7 @@
 #define	HOTT_CC2500_INO
 #define	SCANNER_CC2500_INO
 #define	SFHSS_CC2500_INO
+#define	SKYARTEC_CC2500_INO
 #define	REDPINE_CC2500_INO
 
 //The protocols below need a NRF24L01 to be installed
@@ -213,6 +217,7 @@
 #define	MT99XX_NRF24L01_INO
 #define	NCC1701_NRF24L01_INO
 #define	POTENSIC_NRF24L01_INO
+#define	PROPEL_NRF24L01_INO
 #define	Q303_NRF24L01_INO
 #define	SHENQI_NRF24L01_INO
 #define	SLT_NRF24L01_INO
@@ -221,19 +226,16 @@
 #define	V2X2_NRF24L01_INO
 #define	V761_NRF24L01_INO
 #define	V911S_NRF24L01_INO
+#define	XK_NRF24L01_INO
 #define	YD717_NRF24L01_INO
 #define	ZSX_NRF24L01_INO
 
+//The protocols below need a SX1276 to be installed
+//#define FRSKYR9_SX1276_INO
 
 /***************************/
 /*** PROTOCOLS SETTINGS  ***/
 /***************************/
-
-//FrSkyX specific setting
-//-----------------------
-//EU LBT setting: if commented the TX will not check if a channel is busy before transmitting.
-//!!! Work in progress !!! it's currently known to cause telemerty issues. Enable only if you know what you are doing.
-//#define FRSKYX_LBT
 
 //DSM specific settings
 //---------------------
@@ -243,7 +245,7 @@
 //Some models (X-Vert, Blade 230S...) require a special value to instant stop the motor(s).
 // You can disable this feature by adding "//" on the line below. You have to specify which channel (14 by default) will be used to kill the throttle channel.
 // If the channel 14 is above -50% the throttle is untouched but if it is between -50% and -100%, the throttle output will be forced between -100% and -150%.
-// For example, a value of -80% applied on channel 15 will instantly kill the motors on the X-Vert.
+// For example, a value of -80% applied on channel 14 will instantly kill the motors on the X-Vert.
 #define DSM_THROTTLE_KILL_CH 14 
 
 //AFHDS2A specific settings
@@ -297,6 +299,7 @@
 #define HUB_TELEMETRY				// Use FrSkyD Hub format to send telemetry to TX
 #define BAYANG_HUB_TELEMETRY		// Use FrSkyD Hub format to send telemetry to TX
 #define BUGS_HUB_TELEMETRY			// Use FrSkyD Hub format to send telemetry to TX
+#define DEVO_HUB_TELEMETRY			// Use FrSkyD Hub format to send telemetry to TX
 #define HUBSAN_HUB_TELEMETRY		// Use FrSkyD Hub format to send telemetry to TX
 #define NCC1701_HUB_TELEMETRY		// Use FrSkyD Hub format to send telemetry to TX
 #define CABELL_HUB_TELEMETRY		// Use FrSkyD Hub format to send telemetry to TX
@@ -488,33 +491,6 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 //  - 0x40010000 will give to the protocol the channels in the order 4,2,3,1,5,6,7,8 swapping channel 1 and 4. Note: 0 means leave the channel where it is.
 //  - 0x0000ABCD will give to the protocol the channels in the order 1,2,3,4,10,11,12,13 which potentially enables acces to channels not available on your TX. Note A=10,B=11,C=12,D=13,E=14,F=15.
 
-
-/**********************************/
-/*** DIRECT INPUTS SETTINGS ***/
-/**********************************/
-//In this section you can configure the direct inputs.
-//It enables switches wired directly to the board
-//Direct inputs works only in ppm mode and only for stm_32 boards
-//Uncomment following lines to enable derect inputs or define your own configuration in _MyConfig.h
-/*
-#define ENABLE_DIRECT_INPUTS
-		
-#define DI1_PIN				PC13	
-#define IS_DI1_on			(digitalRead(DI1_PIN)==LOW)
-
-#define DI2_PIN				PC14	
-#define IS_DI2_on			(digitalRead(DI2_PIN)==LOW)
-
-#define DI3_PIN				PC15	
-#define IS_DI3_on			(digitalRead(DI3_PIN)==LOW)
-
-//Define up to 4 direct input channels
-//CHANNEL1 - 2pos switch
-#define DI_CH1_read			IS_DI1_on ? PPM_MAX_100*2 : PPM_MIN_100*2
-//CHANNEL2 - 3pos switch
-#define DI_CH2_read			IS_DI2_on ? PPM_MAX_100*2 : (IS_DI2_on ? PPM_MAX_100 + PPM_MIN_100 : PPM_MIN_100*2)
-*/
-
 /* Available protocols and associated sub protocols to pick and choose from (Listed in alphabetical order)
 	PROTO_AFHDS2A
 		PWM_IBUS
@@ -573,10 +549,13 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 		E015
 		E016H
 	PROTO_ESKY
-		NONE
+		ESKY_STD
+		ESKY_ET4
 	PROTO_ESKY150
 		ESKY150_4CH
 		ESKY150_7CH
+	PROTO_ESKY150V2
+		NONE
 	PROTO_FLYSKY
 		Flysky
 		V9X9
@@ -587,8 +566,20 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 		FZ410
 	PROTO_FQ777
 		NONE
+	PROTO_FRSKY_RX
+		FRSKY_RX
+		FRSKY_CLONE
 	PROTO_FRSKYD
-		NONE
+		FRSKYD
+		DCLONE
+	PROTO_FRSKYL
+		LR12
+		LR12_6CH
+	PROTO_FRSKYR9
+		R9_915
+		R9_868
+		R9_915_8CH
+		R9_868_8CH
 	PROTO_FRSKYV
 		NONE
 	PROTO_FRSKYX
@@ -596,8 +587,16 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 		CH_8
 		EU_16
 		EU_8
+		XCLONE
+	PROTO_FRSKYX2
+		CH_16
+		CH_8
+		EU_16
+		EU_8
+		XCLONE
 	PROTO_FRSKY_RX
-		NONE
+		FRSKY_RX
+		FRSKY_CLONE
 	PROTO_FX816
 		NONE
 	PROTO_FY326
@@ -658,6 +657,8 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 		NONE
 	PROTO_POTENSIC
 		NONE
+	PROTO_PROPEL
+		NONE
 	PROTO_Q2X2
 		Q222
 		Q242
@@ -675,6 +676,8 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 	PROTO_SFHSS
 		NONE
 	PROTO_SHENQI
+		NONE
+	PROTO_SKYARTEC
 		NONE
 	PROTO_SLT
 		SLT_V1
@@ -695,7 +698,8 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 	PROTO_V761
 		NONE
 	PROTO_V911S
-		NONE
+		V911S_STD
+		V911S_E119
 	PROTO_WFLY
 		NONE
 	PROTO_WK2x01
@@ -705,6 +709,9 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 		W6_6_1
 		W6_HEL
 		W6_HEL_I
+	PROTO_XK
+		X450
+		X420
 	PROTO_YD717
 		YD717
 		SKYWLKR
@@ -713,4 +720,30 @@ const PPM_Parameters PPM_prot[14*NBR_BANKS]=	{
 		NIHUI
 	PROTO_ZSX
 		NONE
+*/
+
+/**********************************/
+/*** DIRECT INPUTS SETTINGS ***/
+/**********************************/
+//In this section you can configure the direct inputs.
+//It enables switches wired directly to the board
+//Direct inputs works only in ppm mode and only for stm_32 boards
+//Uncomment following lines to enable derect inputs or define your own configuration in _MyConfig.h
+/*
+#define ENABLE_DIRECT_INPUTS
+		
+#define DI1_PIN				PC13	
+#define IS_DI1_on			(digitalRead(DI1_PIN)==LOW)
+
+#define DI2_PIN				PC14	
+#define IS_DI2_on			(digitalRead(DI2_PIN)==LOW)
+
+#define DI3_PIN				PC15	
+#define IS_DI3_on			(digitalRead(DI3_PIN)==LOW)
+
+//Define up to 4 direct input channels
+//CHANNEL1 - 2pos switch
+#define DI_CH1_read			IS_DI1_on ? PPM_MAX_100*2 : PPM_MIN_100*2
+//CHANNEL2 - 3pos switch
+#define DI_CH2_read			IS_DI2_on ? PPM_MAX_100*2 : (IS_DI2_on ? PPM_MAX_100 + PPM_MIN_100 : PPM_MIN_100*2)
 */
