@@ -125,7 +125,7 @@ void delayMilliseconds(unsigned long ms)
 /* Important notes:
 	- Max value is 16000µs
 	- delay is not accurate due to interrupts happening */
-void delayMicroseconds(unsigned int us)
+void _delayMicroseconds(unsigned int us)
 {
    if (--us == 0)
       return;

@@ -260,6 +260,125 @@ uint8_t packet_in[TELEMETRY_BUFFER_SIZE];//telemetry receiving packets
 typedef uint16_t (*void_function_t) (void);//pointer to a function with no parameters which return an uint16_t integer
 void_function_t remote_callback = 0;
 
+#ifdef STM32_BOARD
+void usart2_begin(uint32_t baud,uint32_t config )
+{
+	usart_init(USART2); 
+	usart_config_gpios_async(USART2,GPIOA,PIN_MAP[PA3].gpio_bit,GPIOA,PIN_MAP[PA2].gpio_bit,config);
+	LED2_output;
+	usart_set_baud_rate(USART2, STM32_PCLK1, baud);
+	usart_enable(USART2);
+}
+void usart3_begin(uint32_t baud,uint32_t config )
+{
+	usart_init(USART3);
+	usart_config_gpios_async(USART3,GPIOB,PIN_MAP[PB11].gpio_bit,GPIOB,PIN_MAP[PB10].gpio_bit,config);
+	usart_set_baud_rate(USART3, STM32_PCLK1, baud);
+	usart_enable(USART3);
+}
+void init_HWTimer()
+{	
+	HWTimer2.pause();									// Pause the timer2 while we're configuring it
+	TIMER2_BASE->PSC = 35;								// 36-1;for 72 MHZ /0.5sec/(35+1)
+	TIMER2_BASE->ARR = 0xFFFF;							// Count until 0xFFFF
+	HWTimer2.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);	// Main scheduler
+	TIMER2_BASE->SR = 0x1E5F & ~TIMER_SR_CC2IF;			// Clear Timer2/Comp2 interrupt flag
+	TIMER2_BASE->DIER &= ~TIMER_DIER_CC2IE;				// Disable Timer2/Comp2 interrupt
+	HWTimer2.refresh();									// Refresh the timer's count, prescale, and overflow
+	HWTimer2.resume();
+
+	#ifdef ENABLE_SERIAL
+		HWTimer3.pause();									// Pause the timer3 while we're configuring it
+		TIMER3_BASE->PSC = 35;								// 36-1;for 72 MHZ /0.5sec/(35+1)
+		TIMER3_BASE->ARR = 0xFFFF;							// Count until 0xFFFF
+		HWTimer3.setMode(TIMER_CH2, TIMER_OUTPUT_COMPARE);	// Serial check
+		TIMER3_BASE->SR = 0x1E5F & ~TIMER_SR_CC2IF;			// Clear Timer3/Comp2 interrupt flag
+		HWTimer3.attachInterrupt(TIMER_CH2,ISR_COMPB);		// Assign function to Timer3/Comp2 interrupt
+		TIMER3_BASE->DIER &= ~TIMER_DIER_CC2IE;				// Disable Timer3/Comp2 interrupt
+		HWTimer3.refresh();									// Refresh the timer's count, prescale, and overflow
+		HWTimer3.resume();
+	#endif
+}
+#endif
+
+#ifdef CHECK_FOR_BOOTLOADER
+	void Mprotocol_serial_init( uint8_t boot )
+#else
+	void Mprotocol_serial_init()
+#endif
+{
+	#ifdef ORANGE_TX
+		PORTC.OUTSET = 0x08 ;
+		PORTC.DIRSET = 0x08 ;
+
+		USARTC0.BAUDCTRLA = 19 ;
+		USARTC0.BAUDCTRLB = 0 ;
+		
+		USARTC0.CTRLB = 0x18 ;
+		USARTC0.CTRLA = (USARTC0.CTRLA & 0xCC) | 0x11 ;
+		USARTC0.CTRLC = 0x2B ;
+		UDR0 ;
+		#ifdef INVERT_SERIAL
+			PORTC.PIN3CTRL |= 0x40 ;
+		#endif
+		#ifdef CHECK_FOR_BOOTLOADER
+			if ( boot )
+			{
+				USARTC0.BAUDCTRLB = 0 ;
+				USARTC0.BAUDCTRLA = 33 ;		// 57600
+				USARTC0.CTRLA = (USARTC0.CTRLA & 0xC0) ;
+				USARTC0.CTRLC = 0x03 ;			// 8 bit, no parity, 1 stop
+				USARTC0.CTRLB = 0x18 ;			// Enable Tx and Rx
+				PORTC.PIN3CTRL &= ~0x40 ;
+			}
+		#endif // CHECK_FOR_BOOTLOADER
+	#elif defined STM32_BOARD
+		#ifdef CHECK_FOR_BOOTLOADER
+			if ( boot )
+			{
+				usart2_begin(57600,SERIAL_8N1);
+				USART2_BASE->CR1 &= ~USART_CR1_RXNEIE ;
+				(void)UDR0 ;
+			}
+			else
+		#endif // CHECK_FOR_BOOTLOADER
+		{
+			usart2_begin(100000,SERIAL_8E2);
+			USART2_BASE->CR1 |= USART_CR1_PCE_BIT;
+		}
+		usart3_begin(100000,SERIAL_8E2);
+		USART3_BASE->CR1 &= ~ USART_CR1_RE;		//disable receive
+		USART2_BASE->CR1 &= ~ USART_CR1_TE;		//disable transmit
+	#else
+		//ATMEGA328p
+		#include <util/setbaud.h>	
+		UBRR0H = UBRRH_VALUE;
+		UBRR0L = UBRRL_VALUE;
+		UCSR0A = 0 ;	// Clear X2 bit
+		//Set frame format to 8 data bits, even parity, 2 stop bits
+		UCSR0C = _BV(UPM01)|_BV(USBS0)|_BV(UCSZ01)|_BV(UCSZ00);
+		while ( UCSR0A & (1 << RXC0) )	//flush receive buffer
+			UDR0;
+		//enable reception and RC complete interrupt
+		UCSR0B = _BV(RXEN0)|_BV(RXCIE0);//rx enable and interrupt
+		#ifndef DEBUG_PIN
+			#if defined(TELEMETRY)
+				initTXSerial( SPEED_100K ) ;
+			#endif //TELEMETRY
+		#endif //DEBUG_PIN
+		#ifdef CHECK_FOR_BOOTLOADER
+			if ( boot )
+			{
+				UBRR0H = 0;
+				UBRR0L = 33;			// 57600
+				UCSR0C &= ~_BV(UPM01);	// No parity
+				UCSR0B &= ~_BV(RXCIE0);	// No rx interrupt
+				UCSR0A |= _BV(U2X0);	// Double speed mode USART0
+			}
+		#endif // CHECK_FOR_BOOTLOADER
+	#endif //ORANGE_TX
+}
+
 // Init
 void setup()
 {
@@ -1972,125 +2091,6 @@ void modules_reset()
 	delayMilliseconds(100);
 	prev_power=0xFD;		// unused power value
 }
-
-#ifdef CHECK_FOR_BOOTLOADER
-	void Mprotocol_serial_init( uint8_t boot )
-#else
-	void Mprotocol_serial_init()
-#endif
-{
-	#ifdef ORANGE_TX
-		PORTC.OUTSET = 0x08 ;
-		PORTC.DIRSET = 0x08 ;
-
-		USARTC0.BAUDCTRLA = 19 ;
-		USARTC0.BAUDCTRLB = 0 ;
-		
-		USARTC0.CTRLB = 0x18 ;
-		USARTC0.CTRLA = (USARTC0.CTRLA & 0xCC) | 0x11 ;
-		USARTC0.CTRLC = 0x2B ;
-		UDR0 ;
-		#ifdef INVERT_SERIAL
-			PORTC.PIN3CTRL |= 0x40 ;
-		#endif
-		#ifdef CHECK_FOR_BOOTLOADER
-			if ( boot )
-			{
-				USARTC0.BAUDCTRLB = 0 ;
-				USARTC0.BAUDCTRLA = 33 ;		// 57600
-				USARTC0.CTRLA = (USARTC0.CTRLA & 0xC0) ;
-				USARTC0.CTRLC = 0x03 ;			// 8 bit, no parity, 1 stop
-				USARTC0.CTRLB = 0x18 ;			// Enable Tx and Rx
-				PORTC.PIN3CTRL &= ~0x40 ;
-			}
-		#endif // CHECK_FOR_BOOTLOADER
-	#elif defined STM32_BOARD
-		#ifdef CHECK_FOR_BOOTLOADER
-			if ( boot )
-			{
-				usart2_begin(57600,SERIAL_8N1);
-				USART2_BASE->CR1 &= ~USART_CR1_RXNEIE ;
-				(void)UDR0 ;
-			}
-			else
-		#endif // CHECK_FOR_BOOTLOADER
-		{
-			usart2_begin(100000,SERIAL_8E2);
-			USART2_BASE->CR1 |= USART_CR1_PCE_BIT;
-		}
-		usart3_begin(100000,SERIAL_8E2);
-		USART3_BASE->CR1 &= ~ USART_CR1_RE;		//disable receive
-		USART2_BASE->CR1 &= ~ USART_CR1_TE;		//disable transmit
-	#else
-		//ATMEGA328p
-		#include <util/setbaud.h>	
-		UBRR0H = UBRRH_VALUE;
-		UBRR0L = UBRRL_VALUE;
-		UCSR0A = 0 ;	// Clear X2 bit
-		//Set frame format to 8 data bits, even parity, 2 stop bits
-		UCSR0C = _BV(UPM01)|_BV(USBS0)|_BV(UCSZ01)|_BV(UCSZ00);
-		while ( UCSR0A & (1 << RXC0) )	//flush receive buffer
-			UDR0;
-		//enable reception and RC complete interrupt
-		UCSR0B = _BV(RXEN0)|_BV(RXCIE0);//rx enable and interrupt
-		#ifndef DEBUG_PIN
-			#if defined(TELEMETRY)
-				initTXSerial( SPEED_100K ) ;
-			#endif //TELEMETRY
-		#endif //DEBUG_PIN
-		#ifdef CHECK_FOR_BOOTLOADER
-			if ( boot )
-			{
-				UBRR0H = 0;
-				UBRR0L = 33;			// 57600
-				UCSR0C &= ~_BV(UPM01);	// No parity
-				UCSR0B &= ~_BV(RXCIE0);	// No rx interrupt
-				UCSR0A |= _BV(U2X0);	// Double speed mode USART0
-			}
-		#endif // CHECK_FOR_BOOTLOADER
-	#endif //ORANGE_TX
-}
-
-#ifdef STM32_BOARD
-	void usart2_begin(uint32_t baud,uint32_t config )
-	{
-		usart_init(USART2); 
-		usart_config_gpios_async(USART2,GPIOA,PIN_MAP[PA3].gpio_bit,GPIOA,PIN_MAP[PA2].gpio_bit,config);
-		LED2_output;
-		usart_set_baud_rate(USART2, STM32_PCLK1, baud);
-		usart_enable(USART2);
-	}
-	void usart3_begin(uint32_t baud,uint32_t config )
-	{
-		usart_init(USART3);
-		usart_config_gpios_async(USART3,GPIOB,PIN_MAP[PB11].gpio_bit,GPIOB,PIN_MAP[PB10].gpio_bit,config);
-		usart_set_baud_rate(USART3, STM32_PCLK1, baud);
-		usart_enable(USART3);
-	}
-	void init_HWTimer()
-	{	
-		HWTimer2.pause();									// Pause the timer2 while we're configuring it
-		TIMER2_BASE->PSC = 35;								// 36-1;for 72 MHZ /0.5sec/(35+1)
-		TIMER2_BASE->ARR = 0xFFFF;							// Count until 0xFFFF
-		HWTimer2.setMode(TIMER_CH1, TIMER_OUTPUT_COMPARE);	// Main scheduler
-		TIMER2_BASE->SR = 0x1E5F & ~TIMER_SR_CC2IF;			// Clear Timer2/Comp2 interrupt flag
-		TIMER2_BASE->DIER &= ~TIMER_DIER_CC2IE;				// Disable Timer2/Comp2 interrupt
-		HWTimer2.refresh();									// Refresh the timer's count, prescale, and overflow
-		HWTimer2.resume();
-
-		#ifdef ENABLE_SERIAL
-			HWTimer3.pause();									// Pause the timer3 while we're configuring it
-			TIMER3_BASE->PSC = 35;								// 36-1;for 72 MHZ /0.5sec/(35+1)
-			TIMER3_BASE->ARR = 0xFFFF;							// Count until 0xFFFF
-			HWTimer3.setMode(TIMER_CH2, TIMER_OUTPUT_COMPARE);	// Serial check
-			TIMER3_BASE->SR = 0x1E5F & ~TIMER_SR_CC2IF;			// Clear Timer3/Comp2 interrupt flag
-			HWTimer3.attachInterrupt(TIMER_CH2,ISR_COMPB);		// Assign function to Timer3/Comp2 interrupt
-			TIMER3_BASE->DIER &= ~TIMER_DIER_CC2IE;				// Disable Timer3/Comp2 interrupt
-			HWTimer3.refresh();									// Refresh the timer's count, prescale, and overflow
-			HWTimer3.resume();
-		#endif
-	}
-#endif
 
 #ifdef CHECK_FOR_BOOTLOADER
 void pollBoot()
