@@ -1,0 +1,155 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build for STM32F1 4-in-1 MULTI-Module",
+            "type": "shell",
+            "command": [
+                "arduino-cli core update-index --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json;",
+                "arduino-cli core install multi4in1:STM32F1 --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json;",
+                "arduino-cli compile -b multi4in1:STM32F1:multistm32f103c:debug_option=none Multiprotocol/Multiprotocol.ino --build-path ${workspaceFolder}/.vscode/build;",
+                "rm Multiprotocol/Multiprotocol.ino.multi4in1*.elf;",
+                "rm Multiprotocol/Multiprotocol.ino.multi4in1*.bin;"
+            ],
+            "group": "build",
+            "isBackground": false,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build for STM32F1 MULTI-Module (Serial Debugging)",
+            "type": "shell",
+            "command": [
+                "arduino-cli core update-index --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json;",
+                "arduino-cli core install multi4in1:STM32F1 --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json;",
+                "arduino-cli compile -b multi4in1:STM32F1:multistm32f103c:debug_option=ftdi Multiprotocol/Multiprotocol.ino",
+            ],
+            "group": "build",
+            "isBackground": false,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build for STM32F1 MULTI-Module (USB Debugging)",
+            "type": "shell",
+            "command": [
+                "arduino-cli core update-index --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json;",
+                "arduino-cli core install multi4in1:STM32F1 --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json;",
+                "arduino-cli compile -b multi4in1:STM32F1:multistm32f103c:debug_option=native Multiprotocol/Multiprotocol.ino",
+            ],
+            "group": "build",
+            "isBackground": false,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build for T18 Pro Internal 5-in-1 MULTI-Module",
+            "type": "shell",
+            "command": [
+                "arduino-cli core update-index --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json;",
+                "arduino-cli core install multi4in1:STM32F1 --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json;",
+                "arduino-cli compile -b multi4in1:STM32F1:multi5in1t18int Multiprotocol/Multiprotocol.ino",
+            ],
+            "group": "build",
+            "isBackground": false,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build for ATmega328p 4-in-1 MULTI-Module (USBasp Upload)",
+            "type": "shell",
+            "command": [
+                "arduino-cli core update-index --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json;",
+                "arduino-cli core install arduino:avr",
+                "arduino-cli core install multi4in1:avr --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json;",
+                "arduino-cli compile -b multi4in1:avr:multiatmega328p:bootloader=none Multiprotocol/Multiprotocol.ino",
+            ],
+            "group": "build",
+            "isBackground": false,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build for ATmega328p 4-in-1 MULTI-Module (Flash from TX)",
+            "type": "shell",
+            "command": [
+                "arduino-cli core update-index --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json;",
+                "arduino-cli core install arduino:avr",
+                "arduino-cli core install multi4in1:avr --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json;",
+                "arduino-cli compile -b multi4in1:avr:multiatmega328p:bootloader=optiboot Multiprotocol/Multiprotocol.ino",
+            ],
+            "group": "build",
+            "isBackground": false,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true
+            },
+            "problemMatcher": []
+        },
+        {
+        "label": "Upload to STM32F1 4-in-1 MULTI-Module",
+        "type": "shell",
+        "command": [
+            "arduino-cli core update-index --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json;",
+            "arduino-cli core install multi4in1:STM32F1 --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json;",
+            "arduino-cli compile -b multi4in1:STM32F1:multistm32f103c:debug_option=none Multiprotocol/Multiprotocol.ino --build-path \"${workspaceFolder}/.vscode/build\";",
+            "arduino-cli upload -b multi4in1:STM32F1:multistm32f103c:debug_option=none -i \"${workspaceFolder}/.vscode/build/Multiprotocol.ino.bin\" -p ${input:ComPort};",
+            "rm Multiprotocol/Multiprotocol.ino.multi4in1*.elf;",
+            "rm Multiprotocol/Multiprotocol.ino.multi4in1*.bin;"
+        ],
+        "group": "test",
+        "isBackground": false,
+        "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared",
+            "showReuseMessage": true
+        },
+        "problemMatcher": []
+    },
+    ],
+    "inputs": [
+        {
+            "id": "ComPort",
+            "description": "COM Port:",
+            "default": "COM4",
+            "type": "promptString"
+        },
+    ]
+}
