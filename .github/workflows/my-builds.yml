@@ -83,15 +83,14 @@ jobs:
           cat Multiprotocol/_Config.h
           cp Multiprotocol/_Config.h ./_Config.h.bak
 
-      - name: Build default firmware for any STM32 module
+      - name: Build default firmware for any 128KB STM32 module
         run: |
           source ./buildroot/bin/buildFunctions;
           BOARD="multi4in1:STM32F1:multistm32f103cb:debug_option=none"
           buildMulti
           cp ./build/Multiprotocol.ino.bin ./binaries/multi-stm-default-${MULTI_VERSION}.bin
-          cp ./_Config.h.bak Multiprotocol/_Config.h
 
-      - name: Build firmware with fixed IDs and no tuning for any STM32 module
+      - name: Build firmware with fixed IDs and no tuning for any STM32 128KB module
         run: |
           source ./buildroot/bin/buildFunctions;
           BOARD="multi4in1:STM32F1:multistm32f103cb:debug_option=none"
@@ -99,9 +98,105 @@ jobs:
           opt_enable FORCE_GLOBAL_ID
           opt_set FORCE_GLOBAL_ID 0x65428639
           opt_enable FORCE_CYRF_ID
-          opt_set '"\\x65\\x42\\x86\\x39\\xF0\\x0F"'
+          opt_set FORCE_CYRF_ID '"\\x65\\x42\\x86\\x39\\xF0\\x0F"'
           buildMulti
           cp ./build/Multiprotocol.ino.bin ./binaries/multi-stm-forceid-${MULTI_VERSION}.bin
+          cp Multiprotocol/_Config.h ./_Config.h.bak
+
+      - name: Build firmware for a CC2500-only internal module
+        run: |
+          source ./buildroot/bin/buildFunctions;
+          BOARD="multi4in1:STM32F1:multistm32f103cb:debug_option=none"
+
+          # Disable INVERT_TELEMETRY
+          opt_disable INVERT_TELEMETRY
+
+          # Disable RF modules
+          opt_disable A7105_INSTALLED
+          opt_disable CYRF6936_INSTALLED
+          opt_disable NRF24L01_INSTALLED
+
+          buildMulti
+          cp ./build/Multiprotocol.ino.bin ./binaries/multi-stm-cc2500-${MULTI_VERSION}.bin
+          cp  ./_Config.h.bak Multiprotocol/_Config.h
+
+      - name: Build firmware for the URUAV TMX5 64KB module
+        run: |
+          source ./buildroot/bin/buildFunctions;
+          BOARD="multi4in1:STM32F1:multistm32f103c8:debug_option=none"
+
+          # Disable all the protocols
+          opt_disable $ALL_PROTOCOLS
+
+          # Enable selected protocols
+          opt_enable AFHDS2A_A7105_INO
+          opt_enable DSM_CYRF6936_INO
+          opt_enable FLYSKY_A7105_INO
+          opt_enable FRSKYD_CC2500_INO
+          opt_enable FRSKYX_CC2500_INO
+          opt_enable FRSKY_RX_CC2500_INO
+          opt_enable MJXQ_NRF24L01_INO
+          opt_enable H8_3D_NRF24L01_INO
+          opt_enable SCANNER_CC2500_INO
+
+          buildMulti
+          cp ./build/Multiprotocol.ino.bin ./binaries/multi-stm-tmx5-${MULTI_VERSION}.bin
+          cp  ./_Config.h.bak Multiprotocol/_Config.h
+
+      - name: Build firmware for the T18 Pro internal module
+        run: |
+          source ./buildroot/bin/buildFunctions;
+          BOARD="multi4in1:STM32F1:multi5in1t18int"
+
+          # Forced CC2500 tuning for
+          opt_enable FORCE_FRSKYD_TUNING
+          opt_set FORCE_FRSKYD_TUNING -12
+          opt_enable FORCE_FRSKYX_TUNING
+          opt_set FORCE_FRSKYX_TUNING -12
+
+          buildMulti
+          cp ./build/Multiprotocol.ino.bin ./binaries/multi-stm-t18int-${MULTI_VERSION}.bin
+          cp  ./_Config.h.bak Multiprotocol/_Config.h
+
+      - name: Build firmware for the AVR module
+        run: |
+          source ./buildroot/bin/buildFunctions;
+          BOARD="multi4in1:avr:multiatmega328p:bootloader=optiboot"
+
+          # Forced CC2500 tuning for
+          opt_enable FORCE_FRSKYD_TUNING
+          opt_set FORCE_FRSKYD_TUNING -51
+          opt_enable FORCE_FRSKYX_TUNING
+          opt_set FORCE_FRSKYX_TUNING -51
+
+          # Disable all the protocols
+          opt_disable $ALL_PROTOCOLS
+
+          # Enable selected protocols
+          opt_enable AFHDS2A_A7105_INO
+          opt_enable DSM_CYRF6936_INO
+          opt_enable FLYSKY_A7105_INO
+          opt_enable FRSKYD_CC2500_INO
+          opt_enable FRSKYX_CC2500_INO
+          opt_enable FRSKY_RX_CC2500_INO
+          opt_enable MJXQ_NRF24L01_INO
+          opt_enable H8_3D_NRF24L01_INO
+          opt_enable SCANNER_CC2500_INO
+
+          buildMulti
+          cp ./build/Multiprotocol.ino.bin ./binaries/multi-avr-forceid-${MULTI_VERSION}.bin
+          cp  ./_Config.h.bak Multiprotocol/_Config.h
+
+      - name: Check the files
+        run: |
+          ls -al ./binaries;
+
+          NUM_FILES=$(ls -l ./binaries | grep ^- | wc -l);
+          if [ $NUM_FILES -gt 0 ]; then 
+            echo "HAVE_FILES=true" >> $GITHUB_ENV
+          else
+            echo "HAVE_FILES=false" >> $GITHUB_ENV
+          fi
 
       - name: 'Upload Artifacts'
         if: env.HAVE_FILES == 'true'
