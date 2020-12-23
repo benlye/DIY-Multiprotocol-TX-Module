@@ -69,28 +69,19 @@ jobs:
           getMultiVersion
           echo "MULTI_VERSION=$(echo $MULTI_VERSION)" >> $GITHUB_ENV
 
-          # Get all the protocols for this board
-          getAllProtocols
-          echo "A7105_PROTOCOLS=$(echo $A7105_PROTOCOLS)" >> $GITHUB_ENV
-          echo "CC2500_PROTOCOLS=$(echo $CC2500_PROTOCOLS)" >> $GITHUB_ENV
-          echo "CYRF6936_PROTOCOLS=$(echo $CYRF6936_PROTOCOLS)" >> $GITHUB_ENV
-          echo "NRF24L01_PROTOCOLS=$(echo $NRF24L01_PROTOCOLS)" >> $GITHUB_ENV
-          echo "SX1276_PROTOCOLS=$(echo $SX1276_PROTOCOLS)" >> $GITHUB_ENV
-          echo "ALL_PROTOCOLS=$(echo $ALL_PROTOCOLS)" >> $GITHUB_ENV
-
       - name: Save default firmware configuration
         run: |
           cat Multiprotocol/_Config.h
           cp Multiprotocol/_Config.h ./_Config.h.bak
 
-      - name: Build default firmware for any 128KB STM32 module
+      - name: Build default firmware for any STM32F103CB module
         run: |
           source ./buildroot/bin/buildFunctions;
           BOARD="multi4in1:STM32F1:multistm32f103cb:debug_option=none"
           buildMulti
           cp ./build/Multiprotocol.ino.bin ./binaries/multi-stm-default-${MULTI_VERSION}.bin
 
-      - name: Build firmware with fixed IDs and no tuning for any STM32 128KB module
+      - name: Build firmware with fixed IDs and no tuning for any STM32F103CB module
         run: |
           source ./buildroot/bin/buildFunctions;
           BOARD="multi4in1:STM32F1:multistm32f103cb:debug_option=none"
@@ -126,6 +117,7 @@ jobs:
           BOARD="multi4in1:STM32F1:multistm32f103c8:debug_option=none"
 
           # Disable all the protocols
+          getAllProtocols
           opt_disable $ALL_PROTOCOLS
 
           # Enable selected protocols
@@ -170,6 +162,7 @@ jobs:
           opt_set FORCE_FRSKYX_TUNING -51
 
           # Disable all the protocols
+          getAllProtocols
           opt_disable $ALL_PROTOCOLS
 
           # Enable selected protocols
