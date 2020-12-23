@@ -1,0 +1,111 @@
+# Workflow for testing MULTI-Module firmware builds
+
+name: Custom Builds
+
+on:
+  # Trigger the workflow on pushes, except those that are tagged (avoids double-testing releases)
+  push:
+    branches:
+    - '**'
+    tags-ignore:
+      - '**'
+    paths:
+    - '.github/workflows/**'
+    - 'buildroot/bin/**'
+    - 'Multiprotocol/**'
+
+  # Trigger the workflow on pull requests to the master branch
+  pull_request:
+    branches:
+      - master
+    paths:
+    - '.github/workflows/**'
+    - 'buildroot/bin/**'
+    - 'Multiprotocol/**'
+
+  # Triggers the workflow on release creation
+  release:
+    types:
+      - created
+
+  # Allows the workflow to be triggered manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Install Arduino CLI
+        uses: arduino/setup-arduino-cli@v1.1.1
+      
+      - name: Prepare build environment
+        run: |
+          echo "Github Ref: $GITHUB_REF"
+          echo "Event name: ${{ github.event_name }}"
+          echo "Event action: ${{ github.event.action }}"
+          echo "Tag name: ${{ github.event.release.tag_name }}"
+
+          arduino-cli config init --additional-urls https://raw.githubusercontent.com/pascallanger/DIY-Multiprotocol-TX-Module-Boards/master/package_multi_4in1_board_index.json
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr;
+          arduino-cli core install multi4in1:avr
+          arduino-cli core install multi4in1:STM32F1
+
+          chmod +x ${GITHUB_WORKSPACE}/buildroot/bin/*
+          echo "${GITHUB_WORKSPACE}/buildroot/bin" >> $GITHUB_PATH
+
+          mkdir ./build
+          mkdir ./binaries
+
+      - name: Configure MULTI-Module firmware options
+        run: |
+          # Load the build functions
+          source ./buildroot/bin/buildFunctions;  
+          
+          # Get the version
+          getMultiVersion
+          echo "MULTI_VERSION=$(echo $MULTI_VERSION)" >> $GITHUB_ENV
+
+          # Get all the protocols for this board
+          getAllProtocols
+          echo "A7105_PROTOCOLS=$(echo $A7105_PROTOCOLS)" >> $GITHUB_ENV
+          echo "CC2500_PROTOCOLS=$(echo $CC2500_PROTOCOLS)" >> $GITHUB_ENV
+          echo "CYRF6936_PROTOCOLS=$(echo $CYRF6936_PROTOCOLS)" >> $GITHUB_ENV
+          echo "NRF24L01_PROTOCOLS=$(echo $NRF24L01_PROTOCOLS)" >> $GITHUB_ENV
+          echo "SX1276_PROTOCOLS=$(echo $SX1276_PROTOCOLS)" >> $GITHUB_ENV
+          echo "ALL_PROTOCOLS=$(echo $ALL_PROTOCOLS)" >> $GITHUB_ENV
+
+      - name: Save default firmware configuration
+        run: |
+          cat Multiprotocol/_Config.h
+          cp Multiprotocol/_Config.h ./_Config.h.bak
+
+      - name: Build default firmware for any STM32 module
+        run: |
+          source ./buildroot/bin/buildFunctions;
+          BOARD="multi4in1:STM32F1:multistm32f103cb:debug_option=none"
+          buildMulti
+          cp ./build/Multiprotocol.ino.bin ./binaries/multi-stm-default-${MULTI_VERSION}.bin
+          cp ./_Config.h.bak Multiprotocol/_Config.h
+
+      - name: Build firmware with fixed IDs and no tuning for any STM32 module
+        run: |
+          source ./buildroot/bin/buildFunctions;
+          BOARD="multi4in1:STM32F1:multistm32f103cb:debug_option=none"
+          opt_disable ENABLE_PPM
+          opt_enable FORCE_GLOBAL_ID
+          opt_set FORCE_GLOBAL_ID 0x65428639
+          opt_enable FORCE_CYRF_ID
+          opt_set '"\\x65\\x42\\x86\\x39\\xF0\\x0F"'
+          buildMulti
+          cp ./build/Multiprotocol.ino.bin ./binaries/multi-stm-forceid-${MULTI_VERSION}.bin
+
+      - name: 'Upload Artifacts'
+        if: env.HAVE_FILES == 'true'
+        uses: actions/upload-artifact@v2
+        with:
+          name: my-builds
+          path: ./binaries/
