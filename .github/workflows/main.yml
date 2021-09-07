@@ -125,6 +125,11 @@ jobs:
             opt_enable FRSKYX_CC2500_INO AFHDS2A_A7105_INO MJXQ_NRF24L01_INO DSM_CYRF6936_INO;
           fi
 
+          # Trim the enabled protocols down for the T18 5-in-1
+          #if [[ "$BOARD" == "multi4in1:STM32F1:multi5in1t18int" ]]; then
+          #  opt_disable CABELL_NRF24L01_INO LOLI_NRF24L01_INO MOULDKG_NRF24L01_INO REDPINE_CC2500_INO;
+          #fi
+
       - name: Save default firmware configuration
         run: |
           cat Multiprotocol/_Config.h
