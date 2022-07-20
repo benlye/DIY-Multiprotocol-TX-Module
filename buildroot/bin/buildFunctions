@@ -104,3 +104,7 @@ buildReleaseFiles(){
       printf "No release files for this board.";
     fi
 }
+
+# Builds for some modules exceed the 120KB working capacity of the STM32F103CB
+# To work around this we have to disable some protocols in the builds for them
+LARGE_BUILD_DISABLED="MOULDKG_NRF24L01_INO IKEAANSLUTA_CC2500_INO";
