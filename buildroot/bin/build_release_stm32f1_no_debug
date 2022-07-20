@@ -52,6 +52,7 @@ printf "\e[33;1mBuilding mm-tlite5in1-aetr-v$MULTI_VERSION.bin\e[0m\n";
 opt_replace RETA AETR;
 opt_disable INVERT_TELEMETRY;
 opt_disable SX1276_INSTALLED;
+opt_disable IKEAANSLUTA_CC2500_INO;
 #opt_enable $DIY_5IN1_DISABLED;
 opt_enable "MULTI_5IN1_INTERNAL JP_TLite"
 buildMulti;
@@ -74,6 +75,7 @@ mv build/Multiprotocol.ino.bin ./binaries/mm-tlite5in1-reta-v$MULTI_VERSION.bin;
 printf "\e[33;1mBuilding mm-stm-cc2500-aetr-v$MULTI_VERSION.bin\e[0m\n";
 opt_replace RETA AETR;
 opt_disable "MULTI_5IN1_INTERNAL JP_TLite"
+opt_enable IKEAANSLUTA_CC2500_INO;
 opt_disable A7105_INSTALLED;
 opt_disable CYRF6936_INSTALLED;
 opt_disable NRF24L01_INSTALLED;
