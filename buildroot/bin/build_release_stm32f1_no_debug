@@ -25,7 +25,7 @@ mv build/Multiprotocol.ino.bin ./binaries/mm-stm-serial-reta-v$MULTI_VERSION.bin
 # DIY 5-in-1 builds
 printf "\e[33;1mBuilding mm-stm-5in1-aetr-v$MULTI_VERSION.bin\e[0m\n";
 opt_replace RETA AETR;
-opt_disable $LARGE_BUILD_DISABLED;
+opt_disable $LARGE_BUILD_DISABLED_PROTOCOLS;
 opt_enable SX1276_INSTALLED;
 buildMulti;
 exitcode=$((exitcode+$?));
@@ -47,7 +47,7 @@ mv build/Multiprotocol.ino.bin ./binaries/mm-stm-5in1-reta-v$MULTI_VERSION.bin;
 printf "\e[33;1mBuilding mm-tlite5in1-aetr-v$MULTI_VERSION.bin\e[0m\n";
 opt_replace RETA AETR;
 opt_disable INVERT_TELEMETRY;
-opt_enable $LARGE_BUILD_DISABLED;
+opt_enable $LARGE_BUILD_DISABLED_PROTOCOLS;
 opt_enable "MULTI_5IN1_INTERNAL JP_TLite"
 buildMulti;
 exitcode=$((exitcode+$?));

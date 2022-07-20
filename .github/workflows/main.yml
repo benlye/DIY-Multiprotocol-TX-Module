@@ -103,6 +103,7 @@ jobs:
           echo "SX1276_PROTOCOLS=$(echo $SX1276_PROTOCOLS)" >> $GITHUB_ENV
           echo "CCNRF_INO_PROTOCOLS=$(echo $CCNRF_INO_PROTOCOLS)" >> $GITHUB_ENV
           echo "ALL_PROTOCOLS=$(echo $ALL_PROTOCOLS)" >> $GITHUB_ENV
+          echo "LARGE_BUILD_DISABLED_PROTOCOLS=$(echo $LARGE_BUILD_DISABLED_PROTOCOLS)" >> $GITHUB_ENV
 
           # Get all the RF modules for this board
           getAllRFModules
