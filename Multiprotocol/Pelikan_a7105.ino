@@ -22,7 +22,7 @@
 //#define PELIKAN_LITE_FORCE_ID
 #define PELIKAN_LITE_FORCE_HOP				// hop sequence creation is unknown
 //#define PELIKAN_SCX24_FORCE_ID
-#define PELIKAN_SCX24_FORCE_HOP				// hop sequence creation is unknown
+//#define PELIKAN_SCX24_FORCE_HOP				// hop sequence creation is unknown
 
 #define PELIKAN_BIND_COUNT		400			// 3sec
 #define PELIKAN_BIND_RF			0x3C
@@ -234,6 +234,10 @@ static uint8_t pelikan_adjust_value(uint8_t value, uint8_t addition, uint8_t lim
 			value += addition;
 			i++;
 		}
+		if (value == 72) {
+			value += addition;
+			i++;
+		}
 	}
 	while (i > 0);
 
@@ -275,6 +279,36 @@ static void __attribute__((unused)) pelikan_init_hop()
 		hopping_frequency[i] = pelikan_add(hopping_frequency[i-1], addition, PELIKAN_HOP_LIMIT);
 		debug(" %02X", hopping_frequency[i]);
 	}
+	debugln("");
+}
+
+static void __attribute__((unused)) pelikan_init_hop_scx()
+{
+	#define PELIKAN_SCX_HOP_LIMIT 90
+	rx_tx_addr[0] = 0;
+	rx_tx_addr[1] = rx_tx_addr[3] % 30;
+	
+	uint8_t high = (rx_tx_addr[1]>>4) % 3;
+	uint8_t low = rx_tx_addr[1] & 0x0F;
+	
+	uint8_t addition = (20 * high)+ (2 * low) + 8;
+	
+	uint8_t first_channel = 30;
+	
+	hopping_frequency[0] = first_channel;
+	debug("%02X", first_channel);
+	for (uint8_t i = 1; i < PELIKAN_NUM_RF_CHAN - 1; i++)
+	{
+		hopping_frequency[i] = pelikan_add(hopping_frequency[i-1], addition, PELIKAN_SCX_HOP_LIMIT);
+		debug(" %02X", hopping_frequency[i]);
+	}
+
+	high = rx_tx_addr[1]>>4;
+	low = rx_tx_addr[1] % 0x10;
+	uint8_t last_channel = 42 - (high * 10) - low;
+	hopping_frequency[PELIKAN_NUM_RF_CHAN - 1] = last_channel;
+
+	debug(" %02X", last_channel);
 	debugln("");
 }
 
@@ -345,6 +379,7 @@ void PELIKAN_init()
 		}
 		else// if(sub_protocol==PELIKAN_SCX24)
 		{
+			pelikan_init_hop_scx();
 			#if defined(PELIKAN_SCX24_FORCE_HOP)
 				// Hop frequency table
 				uint8_t num=rx_tx_addr[3] & 0x03;
