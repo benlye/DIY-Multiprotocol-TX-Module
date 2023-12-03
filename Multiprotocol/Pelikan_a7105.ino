@@ -290,11 +290,27 @@ static void __attribute__((unused)) pelikan_init_hop_scx()
 	
 	uint8_t high = (rx_tx_addr[1]>>4) % 3;
 	uint8_t low = rx_tx_addr[1] & 0x0F;
-	
-	uint8_t addition = (20 * high)+ (2 * low) + 8;
-	
-	uint8_t first_channel = 30;
-	
+	int16_t i = (high * 10) + low - 23; 
+	debugln("H: %02X L: %02X I: %02X", high, low, i);
+
+	uint8_t first_channel;
+	uint8_t last_channel;
+	uint8_t addition;
+
+	if (i < 1)
+	{
+		first_channel = 30;
+		last_channel = 42 - (high * 10) - low;
+		addition = (20 * high) + (2 * low) + 8;
+	}
+	else
+	{
+		first_channel = 
+		first_channel = pelikan_adjust_value((i * 4) + 42, 42, PELIKAN_SCX_HOP_LIMIT);
+		last_channel = 42 - i + 1;
+		addition = (20 * high) + (2 * low) + 8; // not right, don't know what it should be yet
+	}
+
 	hopping_frequency[0] = first_channel;
 	debug("%02X", first_channel);
 	for (uint8_t i = 1; i < PELIKAN_NUM_RF_CHAN - 1; i++)
@@ -302,10 +318,6 @@ static void __attribute__((unused)) pelikan_init_hop_scx()
 		hopping_frequency[i] = pelikan_add(hopping_frequency[i-1], addition, PELIKAN_SCX_HOP_LIMIT);
 		debug(" %02X", hopping_frequency[i]);
 	}
-
-	high = rx_tx_addr[1]>>4;
-	low = rx_tx_addr[1] % 0x10;
-	uint8_t last_channel = 42 - (high * 10) - low;
 	hopping_frequency[PELIKAN_NUM_RF_CHAN - 1] = last_channel;
 
 	debug(" %02X", last_channel);
