@@ -305,7 +305,6 @@ static void __attribute__((unused)) pelikan_init_hop_scx()
 	}
 	else
 	{
-		first_channel = 
 		first_channel = pelikan_adjust_value((i * 4) + 42, 42, PELIKAN_SCX_HOP_LIMIT);
 		last_channel = 42 - i + 1;
 		addition = (20 * high) + (2 * low) + 8; // not right, don't know what it should be yet
