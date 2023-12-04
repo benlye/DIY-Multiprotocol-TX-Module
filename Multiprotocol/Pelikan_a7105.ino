@@ -255,7 +255,20 @@ static uint8_t pelikan_add(uint8_t pfrq,uint8_t a, uint8_t limit)
 }
 static void pelikan_reverse()
 {
-	uint8_t temp[29] = {hopping_frequency[0],hopping_frequency[1],hopping_frequency[2],hopping_frequency[26],hopping_frequency[27],hopping_frequency[28],hopping_frequency[23],hopping_frequency[24],hopping_frequency[25],hopping_frequency[20],hopping_frequency[21],hopping_frequency[22],hopping_frequency[17],hopping_frequency[18],hopping_frequency[19],hopping_frequency[14],hopping_frequency[15],hopping_frequency[16],hopping_frequency[11],hopping_frequency[12],hopping_frequency[13],hopping_frequency[8],hopping_frequency[9],hopping_frequency[10],hopping_frequency[5],hopping_frequency[6],hopping_frequency[7],hopping_frequency[4],hopping_frequency[3]};
+	uint8_t temp[29] = {hopping_frequency[0],hopping_frequency[1],hopping_frequency[2],hopping_frequency[26],hopping_frequency[27],hopping_frequency[28],hopping_frequency[23],hopping_frequency[24],hopping_frequency[25],
+		hopping_frequency[20],hopping_frequency[21],hopping_frequency[22],hopping_frequency[17],hopping_frequency[18],hopping_frequency[19],hopping_frequency[14],hopping_frequency[15],hopping_frequency[16],hopping_frequency[11],
+		hopping_frequency[12],hopping_frequency[13],hopping_frequency[8],hopping_frequency[9],hopping_frequency[10],hopping_frequency[5],hopping_frequency[6],hopping_frequency[7],hopping_frequency[4],hopping_frequency[3]};
+	for (uint8_t i = 0; i < PELIKAN_NUM_RF_CHAN; i++)
+	{
+		hopping_frequency[i] = temp[i];
+	}
+}
+
+static void pelikan_reverse2()
+{
+	uint8_t temp[29] = {hopping_frequency[0],hopping_frequency[1],hopping_frequency[2],hopping_frequency[28],hopping_frequency[25],hopping_frequency[26],hopping_frequency[27],hopping_frequency[24],hopping_frequency[21],
+		hopping_frequency[22],hopping_frequency[23],hopping_frequency[20],hopping_frequency[17],hopping_frequency[18],hopping_frequency[19],hopping_frequency[16],hopping_frequency[13],hopping_frequency[14],hopping_frequency[15],
+		hopping_frequency[12],hopping_frequency[9],hopping_frequency[10],hopping_frequency[11],hopping_frequency[8],hopping_frequency[5],hopping_frequency[6],hopping_frequency[7],hopping_frequency[3],hopping_frequency[4]};
 	for (uint8_t i = 0; i < PELIKAN_NUM_RF_CHAN; i++)
 	{
 		hopping_frequency[i] = temp[i];
@@ -299,8 +312,19 @@ static void __attribute__((unused)) pelikan_init_hop_scx()
 	
 	uint8_t high = (rx_tx_addr[1]>>4);
 	uint8_t low = rx_tx_addr[1] & 0x0F;
-	int16_t i = (high * 10) + low - 23; 
-	debugln("H: %02X L: %02X I: %02X", high, low, i);
+	int16_t i = (high * 10) + low - 23;
+	uint8_t j = 0;
+
+	if (i > 24)
+	{
+		do
+		{
+			i -= 24;
+			j++;
+		} while (i > 24);
+	}
+
+	debugln("H: %02X L: %02X I: %02X J: %02X", high, low, i, j);
 
 	uint8_t first_channel;
 	uint8_t last_channel;
@@ -342,10 +366,12 @@ static void __attribute__((unused)) pelikan_init_hop_scx()
 		hopping_frequency[i] = pelikan_add(hopping_frequency[i-1], addition, PELIKAN_SCX_HOP_LIMIT);
 	}
 
-	if (i > 0)
+	if (i > 0 && j < 1)
 		pelikan_reverse();
+	if (i > 0 && j > 0)
+		pelikan_reverse2();
 
-	hopping_frequency[PELIKAN_NUM_RF_CHAN - 1] = last_channel;
+	hopping_frequency[PELIKAN_NUM_RF_CHAN - 1 - j] = last_channel;
 
 	for (uint8_t i = 0; i < PELIKAN_NUM_RF_CHAN; i++)
 	{
