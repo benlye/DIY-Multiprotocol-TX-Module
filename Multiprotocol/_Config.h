@@ -172,6 +172,8 @@
 #define MULTI_CONFIG_INO
 
 //The protocols below need an A7105 to be installed
+#define	PELIKAN_A7105_INO
+/*
 #define	AFHDS2A_A7105_INO
 #define	AFHDS2A_RX_A7105_INO
 #define	BUGS_A7105_INO
@@ -269,6 +271,7 @@
 
 //The protocols below need a SX1276 to be installed
 #define	FRSKYR9_SX1276_INO
+*/
 
 /***************************/
 /*** PROTOCOLS SETTINGS  ***/
