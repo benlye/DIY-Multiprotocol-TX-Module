@@ -298,6 +298,21 @@ static void pelikan_shuffle3()
 	}
 }
 
+static void pelikan_shuffle4()
+{
+	uint8_t temp[29] = {
+		hopping_frequency[ 0],hopping_frequency[ 1],hopping_frequency[28],hopping_frequency[ 1],hopping_frequency[ 4],hopping_frequency[ 2],hopping_frequency[23],
+		hopping_frequency[26],hopping_frequency[22],hopping_frequency[24],hopping_frequency[27],hopping_frequency[25],hopping_frequency[17],hopping_frequency[20],
+		hopping_frequency[16],hopping_frequency[18],hopping_frequency[21],hopping_frequency[19],hopping_frequency[11],hopping_frequency[14],hopping_frequency[10],
+		hopping_frequency[12],hopping_frequency[15],hopping_frequency[13],hopping_frequency[27],hopping_frequency[ 8],hopping_frequency[ 6],hopping_frequency[ 7],
+		hopping_frequency[ 9]
+	};
+	for (uint8_t i = 0; i < PELIKAN_NUM_RF_CHAN; i++)
+	{
+		hopping_frequency[i] = temp[i];
+	}
+}
+
 static void __attribute__((unused)) pelikan_init_hop()
 {
 	#define PELIKAN_HOP_LIMIT 70
@@ -361,10 +376,12 @@ static void __attribute__((unused)) pelikan_init_hop_scx()
 	}
 	else
 	{
-		if (j < 2)
-			first_channel = (i * 4) + 42;
-		else
+		if (j == 2)
 			first_channel = (i * 2) + 36;
+		else if (j == 3)
+			first_channel = (i * 8) + 54;
+		else
+			first_channel = (i * 4) + 42;
 
 		if (first_channel > PELIKAN_SCX_HOP_LIMIT)
 		{
@@ -373,23 +390,46 @@ static void __attribute__((unused)) pelikan_init_hop_scx()
 				first_channel -= 62;
 			} while (first_channel > PELIKAN_SCX_HOP_LIMIT);
 		}
+
 		if (first_channel == 48)
+		{
 			if (j == 2)
 				first_channel += 18;
+			if (j == 3)
+				first_channel += 20;
 			else
 				first_channel += 40;
-		
-		if (first_channel == 52)
+		}
+
+		if (first_channel == 40 && j == 3)
+			first_channel += 18;
+
+		if (first_channel == 52 && j < 3)
 			first_channel -= 20;
+
+		if (first_channel == 52 && j == 3)
+			first_channel -= 10;
 		
 		if (first_channel == 66 && j < 2)
 			first_channel += 18;
 		
-		if (first_channel == 72)
+		if (first_channel == 66 && j == 3)
+			first_channel -= 22;
+
+		if (first_channel == 72 && j < 2)
 			first_channel -= 10;
 
+		if (first_channel == 72 && j == 2)
+			first_channel -= 20;
+
+		if (first_channel == 72 && j == 3)
+			first_channel -= 36;
+
 		last_channel = 42 - i + 1;
-		
+
+		if (last_channel == 24 && j == 2)		
+			last_channel += 9;
+
 		if (last_channel == 36)
 			last_channel -= 10;
 
@@ -408,11 +448,25 @@ static void __attribute__((unused)) pelikan_init_hop_scx()
 		pelikan_shuffle2();
 	if (i > 0 && j == 2)
 		pelikan_shuffle3();
+	if (i > 0 && j == 3)
+		pelikan_shuffle4();
 
 	if (j == 1)
+	{
 		hopping_frequency[PELIKAN_NUM_RF_CHAN - 2] = last_channel;
+	} else if (j == 3)
+	{
+		uint8_t t = (2 * i) + 36;
+		if (t == 48)
+			t += 18;
+
+		hopping_frequency[1] = t;
+		hopping_frequency[PELIKAN_NUM_RF_CHAN - 5] = last_channel;
+	}	
 	else
+	{
 		hopping_frequency[PELIKAN_NUM_RF_CHAN - 1] = last_channel;
+	}
 
 	for (uint8_t i = 0; i < PELIKAN_NUM_RF_CHAN; i++)
 	{
