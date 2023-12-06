@@ -345,7 +345,7 @@ static void __attribute__((unused)) pelikan_init_hop_scx()
 {
 	#define PELIKAN_SCX_HOP_LIMIT 90
 	rx_tx_addr[0] = 0;
-	rx_tx_addr[1] = rx_tx_addr[3] % 72;
+	rx_tx_addr[1] += RX_num;
 	debugln("TX[0]: %02X TX[1]: %02X", rx_tx_addr[0], rx_tx_addr[1]);
 	
 	uint8_t high = (rx_tx_addr[1]>>4);
@@ -380,6 +380,8 @@ static void __attribute__((unused)) pelikan_init_hop_scx()
 			first_channel = (i * 2) + 36;
 		else if (j == 3)
 			first_channel = (i * 8) + 54;
+		else if (j == 4)
+			first_channel = 30;
 		else
 			first_channel = (i * 4) + 42;
 
@@ -404,19 +406,19 @@ static void __attribute__((unused)) pelikan_init_hop_scx()
 		if (first_channel == 40 && j == 3)
 			first_channel += 18;
 
-		if (first_channel == 52 && j < 3)
+		if (first_channel == 52 && (j < 3 || j == 5))
 			first_channel -= 20;
 
 		if (first_channel == 52 && j == 3)
 			first_channel -= 10;
 		
-		if (first_channel == 66 && j < 2)
+		if (first_channel == 66 && (j < 2 || j == 5))
 			first_channel += 18;
 		
 		if (first_channel == 66 && j == 3)
 			first_channel -= 22;
 
-		if (first_channel == 72 && j < 2)
+		if (first_channel == 72 && (j < 2 || j == 5))
 			first_channel -= 10;
 
 		if (first_channel == 72 && j == 2)
@@ -433,7 +435,10 @@ static void __attribute__((unused)) pelikan_init_hop_scx()
 		if (last_channel == 36)
 			last_channel -= 10;
 
-		addition = 56 - (2 * i);
+		if (j == 4)
+			addition = 6 + (2 * i);
+		else
+			addition = 56 - (2 * i);
 	}
 
 	hopping_frequency[0] = first_channel;
@@ -442,7 +447,7 @@ static void __attribute__((unused)) pelikan_init_hop_scx()
 		hopping_frequency[i] = pelikan_add(hopping_frequency[i-1], addition, PELIKAN_SCX_HOP_LIMIT);
 	}
 
-	if (i > 0 && j < 1)
+	if (i > 0 && (j == 0 || j == 5))
 		pelikan_shuffle1();
 	if (i > 0 && j == 1)
 		pelikan_shuffle2();
