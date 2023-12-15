@@ -263,7 +263,7 @@ static uint8_t pelikan_firstCh_scx(uint8_t i, uint8_t j)
 				ch += 18;
 			break;
 		case 52:
-			if (j < 4)
+			if (j < 3)
 				ch -= 20;
 			else if (j == 4)
 				ch -= 10;
@@ -281,6 +281,15 @@ static uint8_t pelikan_firstCh_scx(uint8_t i, uint8_t j)
 				ch -= 20;
 			else if (j == 4)
 				ch -= 36;
+			break;
+		case 74:
+			if (j == 4)
+				ch -= 20;
+			break;
+		case 86:
+			if (j == 4)
+				ch -= 48;
+			break;
 	}
 
 	return ch;
@@ -324,60 +333,22 @@ static uint8_t pelikan_add(uint8_t pfrq,uint8_t a, uint8_t limit)
 	return nfrq;
 }
 
-static void pelikan_shuffle1()
+static void pelikan_shuffle(uint8_t j)
 {
-	uint8_t temp[29] = {
-		hopping_frequency[ 0],hopping_frequency[ 1],hopping_frequency[ 2],hopping_frequency[26],hopping_frequency[27],hopping_frequency[28],hopping_frequency[23],
-		hopping_frequency[24],hopping_frequency[25],hopping_frequency[20],hopping_frequency[21],hopping_frequency[22],hopping_frequency[17],hopping_frequency[18],
-		hopping_frequency[19],hopping_frequency[14],hopping_frequency[15],hopping_frequency[16],hopping_frequency[11],hopping_frequency[12],hopping_frequency[13],
-		hopping_frequency[ 8],hopping_frequency[ 9],hopping_frequency[10],hopping_frequency[ 5],hopping_frequency[ 6],hopping_frequency[ 7],hopping_frequency[ 4],
-		hopping_frequency[ 3]
-	};
+	uint8_t map[4][PELIKAN_NUM_RF_CHAN] = 
+		{
+			{0,1,2,26,27,28,23,24,25,20,21,22,17,18,19,14,15,16,11,12,13,8,9,10,5,6,7,4,3},
+			{0,1,2,28,25,26,27,24,21,22,23,20,17,18,19,16,13,14,15,12,9,10,11,8,5,6,7,3,4},
+			{0,1,27,28,25,26,23,24,21,22,19,20,17,18,15,16,13,14,11,12,9,10,7,8,5,6,3,4,2},
+			{0,1,28,1,4,2,23,26,22,24,27,25,17,20,16,18,21,19,11,14,10,12,15,13,27,8,6,7,9}
+		};
+
+	uint8_t temp[PELIKAN_NUM_RF_CHAN];
 	for (uint8_t i = 0; i < PELIKAN_NUM_RF_CHAN; i++)
 	{
-		hopping_frequency[i] = temp[i];
+		temp[i] = hopping_frequency[map[j-1][i]];
 	}
-}
 
-static void pelikan_shuffle2()
-{
-	uint8_t temp[29] = {
-		hopping_frequency[ 0],hopping_frequency[ 1],hopping_frequency[ 2],hopping_frequency[28],hopping_frequency[25],hopping_frequency[26],hopping_frequency[27],
-		hopping_frequency[24],hopping_frequency[21],hopping_frequency[22],hopping_frequency[23],hopping_frequency[20],hopping_frequency[17],hopping_frequency[18],
-		hopping_frequency[19],hopping_frequency[16],hopping_frequency[13],hopping_frequency[14],hopping_frequency[15],hopping_frequency[12],hopping_frequency[ 9],
-		hopping_frequency[10],hopping_frequency[11],hopping_frequency[ 8],hopping_frequency[ 5],hopping_frequency[ 6],hopping_frequency[ 7],hopping_frequency[ 3],
-		hopping_frequency[4]
-	};
-	for (uint8_t i = 0; i < PELIKAN_NUM_RF_CHAN; i++)
-	{
-		hopping_frequency[i] = temp[i];
-	}
-}
-
-static void pelikan_shuffle3()
-{
-	uint8_t temp[29] = {
-		hopping_frequency[ 0],hopping_frequency[ 1],hopping_frequency[27],hopping_frequency[28],hopping_frequency[25],hopping_frequency[26],hopping_frequency[23],
-		hopping_frequency[24],hopping_frequency[21],hopping_frequency[22],hopping_frequency[19],hopping_frequency[20],hopping_frequency[17],hopping_frequency[18],
-		hopping_frequency[15],hopping_frequency[16],hopping_frequency[13],hopping_frequency[14],hopping_frequency[11],hopping_frequency[12],hopping_frequency[ 9],
-		hopping_frequency[10],hopping_frequency[ 7],hopping_frequency[ 8],hopping_frequency[ 5],hopping_frequency[ 6],hopping_frequency[ 3],hopping_frequency[ 4],
-		hopping_frequency[2]
-	};
-	for (uint8_t i = 0; i < PELIKAN_NUM_RF_CHAN; i++)
-	{
-		hopping_frequency[i] = temp[i];
-	}
-}
-
-static void pelikan_shuffle4()
-{
-	uint8_t temp[29] = {
-		hopping_frequency[ 0],hopping_frequency[ 1],hopping_frequency[28],hopping_frequency[ 1],hopping_frequency[ 4],hopping_frequency[ 2],hopping_frequency[23],
-		hopping_frequency[26],hopping_frequency[22],hopping_frequency[24],hopping_frequency[27],hopping_frequency[25],hopping_frequency[17],hopping_frequency[20],
-		hopping_frequency[16],hopping_frequency[18],hopping_frequency[21],hopping_frequency[19],hopping_frequency[11],hopping_frequency[14],hopping_frequency[10],
-		hopping_frequency[12],hopping_frequency[15],hopping_frequency[13],hopping_frequency[27],hopping_frequency[ 8],hopping_frequency[ 6],hopping_frequency[ 7],
-		hopping_frequency[ 9]
-	};
 	for (uint8_t i = 0; i < PELIKAN_NUM_RF_CHAN; i++)
 	{
 		hopping_frequency[i] = temp[i];
@@ -448,16 +419,16 @@ static void __attribute__((unused)) pelikan_init_hop_scx()
 	else
 		last_channel = 42 - i + 1;
 
-	if (last_channel == 24 && (j == 2 || j == 4))
+	if (last_channel == 24)
 		last_channel += 9;
 	
 	if (last_channel == 36)
 		last_channel -= 10;
 
 	if (j == 0)
-		addition = (high * 20) + (low * 2) + 8;
+		addition = (2 * i) + 54;
 	else if (j == 5)
-		addition = 6 + (2 * i);
+		addition = (2 * i) + 6;
 	else
 		addition = 56 - (2 * i);
 
@@ -467,14 +438,8 @@ static void __attribute__((unused)) pelikan_init_hop_scx()
 		hopping_frequency[i] = pelikan_add(hopping_frequency[i-1], addition, PELIKAN_SCX_HOP_LIMIT);
 	}
 
-	if (j == 1)
-		pelikan_shuffle1();
-	if (j == 2)
-		pelikan_shuffle2();
-	if (j == 3)
-		pelikan_shuffle3();
-	if (j == 4)
-		pelikan_shuffle4();
+	if (j > 0 && j < 5)
+		pelikan_shuffle(j);
 
 	if (j == 2)
 	{
@@ -484,6 +449,8 @@ static void __attribute__((unused)) pelikan_init_hop_scx()
 		uint8_t t = (2 * i) + 36;
 		if (t == 48)
 			t += 18;
+		if (t == 72)
+			t -= 20;
 
 		hopping_frequency[1] = t;
 		hopping_frequency[PELIKAN_NUM_RF_CHAN - 5] = last_channel;
